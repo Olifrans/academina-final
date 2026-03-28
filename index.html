@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f172a">
-<meta name="description" content="Sistema de Gestão de Academias Premium">
-<title>GYM PRO ELITE | Business Suite</title>
+<meta name="theme-color" content="#10b981">
+<meta name="description" content="GYM PRO ELITE - Sistema Profissional de Gestão de Academias">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GYM PRO ELITE | Sistema Profissional de Gestão</title>
 
 <!-- Fonts & Icons -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,30 +17,35 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://js.mercadopago.com.br/v2"></script>
 
 <style>
+/* ==================== VARIÁVEIS GLOBAIS ==================== */
 :root {
-    --primary: #10b981; /* Emerald 500 */
+    --primary: #10b981;
     --primary-dark: #059669;
-    --secondary: #3b82f6; /* Blue 500 */
-    --bg-body: #f1f5f9; /* Slate 100 */
+    --primary-light: rgba(16, 185, 129, 0.1);
+    --secondary: #3b82f6;
+    --bg-body: #f1f5f9;
     --bg-card: #ffffff;
-    --text-main: #1e293b; /* Slate 800 */
-    --text-muted: #64748b; /* Slate 500 */
+    --text-main: #1e293b;
+    --text-muted: #64748b;
     --border: #e2e8f0;
+    --danger: #ef4444;
+    --warning: #f97316;
     --sidebar-width: 260px;
     --header-height: 70px;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --radius: 12px;
 }
 
-/* Dark Mode Variables */
 body.dark-mode {
     --bg-body: #0f172a;
     --bg-card: #1e293b;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border: #334155;
+    --primary-light: rgba(16, 185, 129, 0.15);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
@@ -48,18 +54,367 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-body);
     color: var(--text-main);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* ==================== LOGIN SCREEN ==================== */
+/* ==================== LANDING PAGE ==================== */
+#landingPage {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    z-index: 10000;
+    overflow-y: auto;
+}
+
+.landing-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+    animation: pulse 15s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.landing-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.landing-logo {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+}
+
+.landing-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.landing-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 40px 0;
+    text-align: left;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.95rem;
+}
+
+.feature-item i {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.landing-pricing {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 32px;
+    margin: 32px 0;
+    text-align: left;
+}
+
+.pricing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pricing-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.pricing-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.pricing-price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+}
+
+.pricing-features {
+    list-style: none;
+    margin-bottom: 24px;
+}
+
+.pricing-features li {
+    padding: 8px 0;
+    color: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pricing-features li i {
+    color: var(--primary);
+}
+
+.btn-cta {
+    width: 100%;
+    max-width: 300px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cta:active { transform: translateY(0); }
+
+.btn-secondary {
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--primary);
+}
+
+.landing-footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+}
+
+.landing-footer a { color: var(--primary); text-decoration: none; }
+
+/* Modal de Checkout */
+#checkoutModal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#checkoutModal.show { display: flex; }
+
+.checkout-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    color: var(--text-main);
+    position: relative;
+}
+
+.checkout-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.checkout-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.step.active { color: var(--primary); font-weight: 600; }
+.step-number {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+.step.active .step-number {
+    background: var(--primary);
+    color: white;
+}
+
+.checkout-form .form-group { margin-bottom: 16px; }
+.checkout-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+.checkout-form input, .checkout-form select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+.checkout-form input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.payment-method {
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-method.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.payment-method i {
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.payment-method.pix i { color: #7c3aed; }
+.payment-method.cartao i { color: #3b82f6; }
+.payment-method.dinheiro i { color: #10b981; }
+
+.checkout-summary {
+    background: var(--bg-body);
+    padding: 16px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.95rem;
+}
+
+.summary-row.total {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary);
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+    padding-top: 12px;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ==================== APP STYLES (Sistema Principal) ==================== */
+
+/* Login Screen */
 #loginScreen {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     z-index: 9999;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -78,6 +433,8 @@ body {
     animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
 .login-logo {
     width: 60px; height: 60px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -88,7 +445,6 @@ body {
     margin: 0 auto 20px;
     font-size: 1.8rem;
     color: white;
-    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
 }
 
 .login-title { font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 8px; }
@@ -109,7 +465,7 @@ body {
 .input-group input:focus {
     border-color: var(--primary);
     background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .btn-login {
@@ -122,24 +478,20 @@ body {
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
-.btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+.btn-login:hover { transform: translateY(-2px); }
 .btn-login:active { transform: translateY(0); }
 
 .login-footer { margin-top: 24px; font-size: 0.8rem; color: #64748b; }
 .login-footer a { color: var(--primary); text-decoration: none; }
 
-/* ==================== DASHBOARD LAYOUT ==================== */
-#appContainer {
-    display: none; /* Hidden by default */
-    height: 100vh;
-    display: flex;
-}
+/* App Container */
+#appContainer { display: none; min-height: 100vh; }
 
 /* Sidebar */
 .sidebar {
@@ -150,6 +502,9 @@ body {
     flex-direction: column;
     transition: transform 0.3s;
     z-index: 100;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -170,11 +525,7 @@ body {
 }
 .sidebar-logo i { color: var(--primary); font-size: 1.4rem; }
 
-.sidebar-menu {
-    flex: 1;
-    padding: 20px 16px;
-    overflow-y: auto;
-}
+.sidebar-menu { flex: 1; padding: 20px 16px; }
 
 .menu-item {
     display: flex;
@@ -182,28 +533,24 @@ body {
     gap: 12px;
     padding: 12px 16px;
     color: var(--text-muted);
-    text-decoration: none;
     border-radius: var(--radius);
     margin-bottom: 4px;
     transition: all 0.2s;
     font-weight: 500;
     cursor: pointer;
 }
-.menu-item:hover { background: rgba(16, 185, 129, 0.05); color: var(--primary); }
-.menu-item.active { background: rgba(16, 185, 129, 0.1); color: var(--primary); font-weight: 600; }
+.menu-item:hover { background: var(--primary-light); color: var(--primary); }
+.menu-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
 .menu-item i { width: 20px; text-align: center; }
 
-.sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid var(--border);
-}
+.sidebar-footer { padding: 20px; border-top: 1px solid var(--border); }
 
 .user-profile {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px;
-    background: rgba(16, 185, 129, 0.05);
+    background: var(--primary-light);
     border-radius: var(--radius);
     cursor: pointer;
 }
@@ -222,11 +569,11 @@ body {
 
 /* Main Content */
 .main-content {
+    margin-left: var(--sidebar-width);
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    position: relative;
+    min-height: 100vh;
 }
 
 .top-bar {
@@ -237,6 +584,9 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
 }
 
 .page-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
@@ -256,11 +606,7 @@ body {
 }
 .btn-icon:hover { background: var(--bg-body); color: var(--primary); border-color: var(--primary); }
 
-.content-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 30px;
-}
+.content-area { flex: 1; padding: 30px; overflow-y: auto; }
 
 /* Cards & Grid */
 .dashboard-grid {
@@ -276,19 +622,6 @@ body {
     border-radius: var(--radius);
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-}
-.stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 80px; height: 80px;
-    background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
-    border-radius: 0 0 0 100%;
 }
 .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
 .stat-icon {
@@ -301,11 +634,12 @@ body {
 }
 .bg-green-light { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
 .bg-blue-light { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
-.bg-red-light { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.bg-orange-light { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+.bg-red-light { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.bg-orange-light { background: rgba(249, 115, 22, 0.1); color: var(--warning); }
+.bg-purple-light { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
 
-.stat-value { font-size: 2rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
-.stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 5px; }
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--text-main); }
+.stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
 
 .content-card {
     background: var(--bg-card);
@@ -322,6 +656,8 @@ body {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
 }
 .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
 .card-title i { color: var(--primary); }
@@ -329,7 +665,7 @@ body {
 /* Forms */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-main); font-size: 0.9rem; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-main); }
 .form-control {
     width: 100%;
     padding: 12px 16px;
@@ -338,9 +674,8 @@ body {
     border-radius: 8px;
     color: var(--text-main);
     font-family: inherit;
-    transition: all 0.2s;
 }
-.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
 .btn-primary {
     background: var(--primary);
@@ -353,21 +688,37 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: background 0.2s;
 }
 .btn-primary:hover { background: var(--primary-dark); }
 
-/* Tables & Lists */
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Tables */
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th { text-align: left; padding: 12px; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
-.data-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem; }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover { background: rgba(16, 185, 129, 0.03); }
+.data-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+.data-table tr:hover { background: var(--primary-light); }
 
 .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--primary); }
-.badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-.badge-warning { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+.badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.badge-warning { background: rgba(249, 115, 22, 0.15); color: var(--warning); }
+.badge-secondary { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+.badge-blocked { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+/* Status Colors */
+.status-ativo { color: var(--primary); }
+.status-inadimplente { color: var(--danger); }
+.status-bloqueado { color: #64748b; }
+.status-cancelado { color: var(--text-muted); }
 
 /* Mobile Nav */
 .mobile-nav {
@@ -397,21 +748,21 @@ body {
 /* Sections */
 .section { display: none; animation: fadeIn 0.4s ease; }
 .section.active { display: block; }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Responsive */
 @media (max-width: 900px) {
-    .sidebar { position: fixed; left: -100%; height: 100%; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+    .sidebar { left: -100%; width: 280px; }
     .sidebar.open { left: 0; }
+    .main-content { margin-left: 0; }
     .mobile-nav { display: flex; }
     .content-area { padding: 20px; padding-bottom: 80px; }
     .form-grid { grid-template-columns: 1fr; }
     .top-bar { padding: 0 20px; }
+    .landing-title { font-size: 2rem; }
 }
 
-/* Loading Overlay */
+/* Loading */
 #loadingOverlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--bg-body);
@@ -420,7 +771,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.5s;
 }
 .spinner {
     width: 50px; height: 50px;
@@ -431,27 +781,278 @@ body {
     margin-bottom: 20px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Legal Notice */
+.legal-notice {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+/* Export Buttons */
+.export-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-export {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+}
+.btn-export.pdf { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.btn-export.excel { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+.btn-export.csv { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+
+/* Retention Badge */
+.retention-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.retention-badge.high { background: rgba(16, 185, 129, 0.2); color: var(--primary); }
+.retention-badge.medium { background: rgba(249, 115, 22, 0.2); color: var(--warning); }
+.retention-badge.low { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+/* Update Badge */
+.update-badge {
+    position: fixed;
+    top: 16px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 500;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.update-badge.show { display: flex; }
+
+/* Color Picker */
+.color-picker-group { display: flex; gap: 10px; align-items: center; }
+.color-picker { width: 50px; height: 36px; border: none; border-radius: 8px; cursor: pointer; }
+.color-preview { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.tab.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+/* Workout Version */
+.version-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
+/* Notification List */
+.notification-item {
+    padding: 12px;
+    border-left: 4px solid var(--primary);
+    background: var(--primary-light);
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 12px;
+}
+.notification-item.warning { border-left-color: var(--warning); background: rgba(249, 115, 22, 0.1); }
+.notification-item.danger { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+/* CPF Hint */
+.cpf-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 12px; }
+
+/* Soft Delete Indicator */
+.deleted-indicator {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-    <h2 style="color: var(--text-main); font-weight: 700;">GYM PRO ELITE</h2>
-    <p style="color: var(--text-muted); margin-top: 8px;">Carregando sistema...</p>
+<!-- ==================== LANDING PAGE ==================== -->
+<div id="landingPage">
+    <section class="landing-hero">
+        <div class="landing-content">
+            <div class="landing-logo"><i class="fas fa-dumbbell"></i></div>
+            <h1 class="landing-title">GYM PRO ELITE</h1>
+            <p class="landing-subtitle">Sistema profissional de gestão para academias. Controle alunos, financeiro, treinos e check-ins em uma plataforma moderna e intuitiva.</p>
+            
+            <div class="landing-features">
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Gestão completa de alunos</div>
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Controle financeiro avançado</div>
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Prescrição de treinos</div>
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Check-in com validação</div>
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Relatórios profissionais</div>
+                <div class="feature-item"><i class="fas fa-check-circle"></i> Backup automático</div>
+            </div>
+            
+            <div class="landing-pricing">
+                <div class="pricing-header">
+                    <h3 class="pricing-title">Licença Vitalícia</h3>
+                    <div class="pricing-price">R$ 297 <span>/único</span></div>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Acesso vitalício ao sistema</li>
+                    <li><i class="fas fa-check"></i> Atualizações gratuitas por 1 ano</li>
+                    <li><i class="fas fa-check"></i> Suporte prioritário por e-mail</li>
+                    <li><i class="fas fa-check"></i> Personalização de marca</li>
+                    <li><i class="fas fa-check"></i> Exportação de relatórios (PDF/Excel)</li>
+                    <li><i class="fas fa-check"></i> Funciona offline (localStorage)</li>
+                </ul>
+                <button class="btn-cta" onclick="openCheckout()">
+                    <i class="fas fa-shopping-cart"></i> Comprar Agora
+                </button>
+                <p style="text-align: center; margin-top: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                    <i class="fas fa-lock"></i> Pagamento seguro via Mercado Pago
+                </p>
+            </div>
+            
+            <button class="btn-cta btn-secondary" onclick="showLogin()">
+                <i class="fas fa-user"></i> Já tenho conta - Entrar
+            </button>
+        </div>
+    </section>
+    
+    <footer class="landing-footer">
+        <p>© 2026 GYM PRO ELITE • <a href="#" onclick="showTerms()">Termos de Uso</a> • <a href="#" onclick="showPrivacy()">Privacidade</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">Sistema desenvolvido com ❤️ para profissionais de educação física</p>
+    </footer>
 </div>
 
-<!-- LOGIN SCREEN -->
+<!-- ==================== CHECKOUT MODAL ==================== -->
+<div id="checkoutModal">
+    <div class="checkout-card">
+        <button class="checkout-close" onclick="closeCheckout()">&times;</button>
+        
+        <div class="checkout-steps">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <span>Dados</span>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <span>Pagamento</span>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <span>Confirmação</span>
+            </div>
+        </div>
+        
+        <!-- Step 1: Dados -->
+        <div id="checkoutStep1">
+            <h3 style="margin-bottom: 20px; color: var(--text-main);">Seus Dados</h3>
+            <form class="checkout-form" id="checkoutForm1">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="buyerName" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail *</label>
+                    <input type="email" id="buyerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome da Academia *</label>
+                    <input type="text" id="buyerAcademy" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone (WhatsApp)</label>
+                    <input type="tel" id="buyerPhone" placeholder="(00) 00000-0000">
+                </div>
+            </form>
+            <button class="btn-checkout" onclick="nextCheckoutStep()">
+                Continuar <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <!-- Step 2: Pagamento -->
+        <div id="checkoutStep2" style="display: none;">
+            <h3 style="margin-bottom: 20px; color: var(--text-main);">Forma de Pagamento</h3>
+            
+            <div class="payment-methods">
+                <div class="payment-method pix selected" onclick="selectPayment('pix')">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Pix</span>
+                </div>
+                <div class="payment-method cartao" onclick="selectPayment('cartao')">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Cartão</span>
+                </div>
+                <div class="payment-method dinheiro" onclick="selectPayment('boleto')">
+                    <i class="fas fa-barcode"></i>
+                    <span>Boleto</span>
+                </div>
+            </div>
+            
+            <div class="checkout-summary">
+                <div class="summary-row"><span>Produto:</span><span>Licença GYM PRO ELITE</span></div>
+                <div class="summary-row"><span>Desconto:</span><span>- R$ 0,00</span></div>
+                <div class="summary-row total"><span>Total:</span><span>R$ 297,00</span></div>
+            </div>
+            
+            <button class="btn-checkout" onclick="processPayment()">
+                <i class="fas fa-lock"></i> Pagar Agora
+            </button>
+            <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                <i class="fas fa-shield-alt"></i> Ambiente seguro • Dados criptografados
+            </p>
+        </div>
+        
+        <!-- Step 3: Confirmação -->
+        <div id="checkoutStep3" style="display: none; text-align: center;">
+            <div style="width: 80px; height: 80px; background: rgba(16,185,129,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fas fa-check" style="font-size: 2rem; color: var(--primary);"></i>
+            </div>
+            <h3 style="margin-bottom: 12px; color: var(--text-main);">Pagamento Aprovado!</h3>
+            <p style="color: var(--text-muted); margin-bottom: 24px;">
+                Seu acesso foi enviado para <strong id="confirmationEmail">email@exemplo.com</strong>
+            </p>
+            <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; text-align: left; margin-bottom: 20px;">
+                <p style="font-size: 0.9rem;"><strong>🔑 Suas Credenciais:</strong></p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">Usuário: <code id="genUser">admin</code></p>
+                <p style="font-size: 0.9rem;">Senha: <code id="genPass">gym2026!</code></p>
+            </div>
+            <button class="btn-checkout" onclick="completePurchase()">
+                <i class="fas fa-sign-in-alt"></i> Acessar Sistema Agora
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
 <div id="loginScreen">
     <div class="login-card">
         <div class="login-logo"><i class="fas fa-dumbbell"></i></div>
-        <h1 class="login-title">Bem-vindo</h1>
-        <p class="login-subtitle">Acesse sua conta para gerenciar sua academia</p>
+        <h1 class="login-title">GYM PRO ELITE</h1>
+        <p class="login-subtitle" id="loginAcademyName">Acesse sua conta</p>
         
-        <form id="loginForm" onsubmit="handleLogin(event)">
+        <form onsubmit="handleLogin(event)">
             <div class="input-group">
-                <label>Email ou Usuário</label>
+                <label>Usuário</label>
                 <input type="text" id="loginUser" placeholder="admin" value="admin">
             </div>
             <div class="input-group">
@@ -459,54 +1060,59 @@ body {
                 <input type="password" id="loginPass" placeholder="••••••" value="admin">
             </div>
             <button type="submit" class="btn-login">
-                <span>Entrar no Sistema</span>
-                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-sign-in-alt"></i> Entrar
             </button>
         </form>
-
+        
         <div class="login-footer">
-            <p>Esqueceu a senha? <a href="#" onclick="Swal.fire('Contate o suporte', 'admin@gympro.com', 'info')">Recuperar</a></p>
-            <p style="margin-top: 10px; opacity: 0.5;">v2.5.0 Business Edition</p>
+            <p><a href="#" onclick="showForgotPassword()">Esqueceu a senha?</a></p>
+            <p style="margin-top: 10px; opacity: 0.5;">v3.0.0 Professional • <span id="loginVersion">GYM PRO ELITE</span></p>
         </div>
     </div>
 </div>
 
-<!-- MAIN APP CONTAINER -->
-<div id="appContainer" style="display: none;">
+<!-- ==================== APP CONTAINER ==================== -->
+<div id="appContainer">
     
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <i class="fas fa-dumbbell"></i>
-                <span>GYM PRO</span>
+                <span id="sidebarAcademyName">GYM PRO</span>
             </div>
         </div>
         
         <nav class="sidebar-menu">
-            <div class="menu-item active" onclick="navTo('dashboard')">
+            <div class="menu-item active" onclick="navTo('dashboard')" data-permission="all">
                 <i class="fas fa-th-large"></i> Dashboard
             </div>
-            <div class="menu-item" onclick="navTo('students')">
+            <div class="menu-item" onclick="navTo('students')" data-permission="admin,reception">
                 <i class="fas fa-users"></i> Alunos
             </div>
-            <div class="menu-item" onclick="navTo('finance')">
+            <div class="menu-item" onclick="navTo('finance')" data-permission="admin,reception">
                 <i class="fas fa-chart-line"></i> Financeiro
             </div>
-            <div class="menu-item" onclick="navTo('workouts')">
+            <div class="menu-item" onclick="navTo('workouts')" data-permission="admin,teacher">
                 <i class="fas fa-clipboard-list"></i> Treinos
             </div>
-            <div class="menu-item" onclick="navTo('settings')">
+            <div class="menu-item" onclick="navTo('checkins')" data-permission="admin,reception">
+                <i class="fas fa-fingerprint"></i> Check-in
+            </div>
+            <div class="menu-item" onclick="navTo('reports')" data-permission="admin">
+                <i class="fas fa-file-alt"></i> Relatórios
+            </div>
+            <div class="menu-item" onclick="navTo('settings')" data-permission="admin">
                 <i class="fas fa-cog"></i> Configurações
             </div>
         </nav>
 
         <div class="sidebar-footer">
-            <div class="user-profile" onclick="handleLogout()">
+            <div class="user-profile" onclick="showUserMenu()">
                 <div class="user-avatar" id="userAvatar">A</div>
                 <div class="user-info">
                     <h4 id="userNameDisplay">Admin</h4>
-                    <p>Clique para sair</p>
+                    <p id="userRoleDisplay">Administrador</p>
                 </div>
             </div>
         </div>
@@ -514,81 +1120,72 @@ body {
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-        <!-- TOP BAR -->
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <button class="btn-icon" onclick="toggleSidebar()" style="display: none;" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <button class="btn-icon" onclick="toggleSidebar()" id="menuToggle" style="display: none;"><i class="fas fa-bars"></i></button>
                 <h2 class="page-title" id="pageTitle">Dashboard</h2>
             </div>
-            
             <div class="action-buttons">
-                <button class="btn-icon" onclick="toggleTheme()" title="Alternar Tema"><i class="fas fa-moon"></i></button>
-                <button class="btn-icon" onclick="exportData()" title="Backup"><i class="fas fa-download"></i></button>
-                <button class="btn-icon" onclick="showNotifications()" title="Notificações"><i class="fas fa-bell"></i></button>
+                <button class="btn-icon" onclick="toggleTheme()" title="Tema"><i class="fas fa-moon"></i></button>
+                <button class="btn-icon" onclick="showNotifications()" title="Alertas"><i class="fas fa-bell"></i></button>
+                <button class="btn-icon" onclick="exportBackup()" title="Backup"><i class="fas fa-download"></i></button>
             </div>
         </header>
 
-        <!-- CONTENT AREA -->
         <div class="content-area">
             
-            <!-- DASHBOARD SECTION -->
+            <!-- DASHBOARD -->
             <div id="dashboard" class="section active">
                 <div class="dashboard-grid">
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-value" id="dashTotalStudents">0</div>
-                                <div class="stat-label">Total Alunos</div>
-                            </div>
+                            <div><div class="stat-value" id="dashTotal">0</div><div class="stat-label">Total Alunos</div></div>
                             <div class="stat-icon bg-blue-light"><i class="fas fa-users"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-value" id="dashActiveStudents">0</div>
-                                <div class="stat-label">Ativos</div>
-                            </div>
+                            <div><div class="stat-value" id="dashActive">0</div><div class="stat-label">Ativos</div></div>
                             <div class="stat-icon bg-green-light"><i class="fas fa-check-circle"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-value" id="dashRevenue">R$ 0</div>
-                                <div class="stat-label">Receita Mensal</div>
-                            </div>
+                            <div><div class="stat-value" id="dashRevenue">R$ 0</div><div class="stat-label">Receita Mês</div></div>
                             <div class="stat-icon bg-green-light"><i class="fas fa-dollar-sign"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-value" id="dashCheckins">0</div>
-                                <div class="stat-label">Check-ins Hoje</div>
-                            </div>
-                            <div class="stat-icon bg-orange-light"><i class="fas fa-fingerprint"></i></div>
+                            <div><div class="stat-value" id="dashRetention">0%</div><div class="stat-label">Retenção</div></div>
+                            <div class="stat-icon bg-purple-light"><i class="fas fa-percentage"></i></div>
                         </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <strong><i class="fas fa-chart-line"></i> Taxa de Retenção</strong>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Meta recomendada: ≥75%</p>
+                        </div>
+                        <div class="retention-badge" id="retentionBadge"><span id="retentionValue">0%</span></div>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
                     <div class="content-card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-area"></i> Frequência Semanal</h3>
-                        </div>
+                        <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-area"></i> Frequência</h3></div>
                         <canvas id="chartFrequency" height="100"></canvas>
                     </div>
                     <div class="content-card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-pie"></i> Planos</h3>
-                        </div>
+                        <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-pie"></i> Planos</h3></div>
                         <canvas id="chartPlans" height="200"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- STUDENTS SECTION -->
+            <!-- ALUNOS -->
             <div id="students" class="section">
                 <div class="content-card">
                     <div class="card-header">
@@ -596,19 +1193,43 @@ body {
                     </div>
                     <form onsubmit="registerStudent(event)" class="form-grid">
                         <div class="form-group">
-                            <label>Nome Completo</label>
+                            <label>Nome Completo *</label>
                             <input type="text" id="stuName" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>CPF</label>
-                            <input type="text" id="stuCpf" class="form-control" maxlength="11" placeholder="Apenas números" required>
+                            <label>CPF *</label>
+                            <input type="text" id="stuCpf" class="form-control" maxlength="14" placeholder="000.000.000-00" oninput="formatCPF(this)" required>
+                            <div class="cpf-hint">Formato: 000.000.000-00 • Validação automática</div>
                         </div>
                         <div class="form-group">
-                            <label>Plano</label>
-                            <select id="stuPlan" class="form-control">
+                            <label>Data de Nascimento</label>
+                            <input type="date" id="stuBirth" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="tel" id="stuPhone" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="stuEmail" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Plano *</label>
+                            <select id="stuPlan" class="form-control" required>
                                 <option value="30">Mensal (R$ 120)</option>
                                 <option value="90">Trimestral (R$ 320)</option>
-                                <option value="365">Anual (R$ 1200)</option>
+                                <option value="180">Semestral (R$ 600)</option>
+                                <option value="365">Anual (R$ 1.200)</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Forma de Pagamento *</label>
+                            <select id="stuPaymentMethod" class="form-control" required>
+                                <option value="dinheiro">💵 Dinheiro</option>
+                                <option value="cartao">💳 Cartão</option>
+                                <option value="pix">📱 Pix</option>
+                                <option value="boleto">📄 Boleto</option>
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: flex-end;">
@@ -622,94 +1243,284 @@ body {
                 <div class="content-card">
                     <div class="card-header">
                         <h3 class="card-title"><i class="fas fa-list"></i> Lista de Alunos</h3>
-                        <input type="text" placeholder="Buscar..." class="form-control" style="width: 200px;" oninput="filterStudents(this.value)">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <input type="text" placeholder="Buscar..." class="form-control" style="width: 200px;" oninput="filterStudents(this.value)">
+                            <div class="export-buttons">
+                                <button class="btn-export excel" onclick="exportStudents('excel')"><i class="fas fa-file-excel"></i></button>
+                                <button class="btn-export csv" onclick="exportStudents('csv')"><i class="fas fa-file-csv"></i></button>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <div class="tabs">
+                        <div class="tab active" onclick="filterByStatus('all', this)">Todos</div>
+                        <div class="tab" onclick="filterByStatus('ativo', this)">Ativos</div>
+                        <div class="tab" onclick="filterByStatus('inadimplente', this)">Inadimplentes</div>
+                        <div class="tab" onclick="filterByStatus('bloqueado', this)">Bloqueados</div>
+                    </div>
+                    
                     <div style="overflow-x: auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Nome</th>
+                                    <th>Aluno</th>
                                     <th>Plano</th>
                                     <th>Vencimento</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="studentsTableBody">
-                                <!-- JS Populates -->
-                            </tbody>
+                            <tbody id="studentsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- FINANCE SECTION -->
+            <!-- FINANCEIRO -->
             <div id="finance" class="section">
                 <div class="dashboard-grid">
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-value" id="finTotal">R$ 0,00</div>
-                                <div class="stat-label">Faturamento Total</div>
-                            </div>
-                            <div class="stat-icon bg-green-light"><i class="fas fa-wallet"></i></div>
+                            <div><div class="stat-value" id="finIncome">R$ 0</div><div class="stat-label">Entradas</div></div>
+                            <div class="stat-icon bg-green-light"><i class="fas fa-arrow-down"></i></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div><div class="stat-value" id="finExpenses">R$ 0</div><div class="stat-label">Saídas</div></div>
+                            <div class="stat-icon bg-red-light"><i class="fas fa-arrow-up"></i></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div><div class="stat-value" id="finProfit">R$ 0</div><div class="stat-label">Lucro Líquido</div></div>
+                            <div class="stat-icon bg-purple-light"><i class="fas fa-chart-line"></i></div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="content-card">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-history"></i> Histórico de Pagamentos</h3>
-                        <button class="btn-primary" onclick="exportPDF('finance')"><i class="fas fa-file-pdf"></i> PDF</button>
+                        <h3 class="card-title"><i class="fas fa-exchange-alt"></i> Lançamentos</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-primary" onclick="showAddTransaction('income')"><i class="fas fa-plus"></i> Entrada</button>
+                            <button class="btn-danger" onclick="showAddTransaction('expense')"><i class="fas fa-minus"></i> Saída</button>
+                        </div>
                     </div>
+                    
+                    <div class="tabs">
+                        <div class="tab active" onclick="filterFinancePeriod('month', this)">Este Mês</div>
+                        <div class="tab" onclick="filterFinancePeriod('year', this)">Este Ano</div>
+                        <div class="tab" onclick="filterFinancePeriod('all', this)">Todos</div>
+                    </div>
+                    
                     <div id="financeList"></div>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 8px;">
+                        <button class="btn-export pdf" onclick="exportFinance('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+                        <button class="btn-export excel" onclick="exportFinance('excel')"><i class="fas fa-file-excel"></i> Excel</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- WORKOUTS SECTION -->
+            <!-- TREINOS -->
             <div id="workouts" class="section">
                 <div class="content-card">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-dumbbell"></i> Prescrição de Treino</h3>
+                        <h3 class="card-title"><i class="fas fa-dumbbell"></i> Prescrever Treino</h3>
                     </div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Aluno</label>
+                            <label>Aluno *</label>
                             <select id="workoutStudent" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <label>Tipo</label>
+                            <label>Tipo *</label>
                             <select id="workoutType" class="form-control">
                                 <option value="A">Treino A (Superior)</option>
                                 <option value="B">Treino B (Inferior)</option>
                                 <option value="C">Treino C (Cardio/Abs)</option>
+                                <option value="D">Treino D (Personalizado)</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Exercícios</label>
-                        <textarea id="workoutDesc" class="form-control" rows="4" placeholder="Ex: Supino Reto 4x10, Puxada Alta 4x12..."></textarea>
+                        <label>Exercícios *</label>
+                        <textarea id="workoutDesc" class="form-control" rows="4" placeholder="Ex: Supino Reto 4x10, 80kg&#10;Puxada Alta 4x12, 60kg&#10;Rosca Direta 3x15, 10kg"></textarea>
                     </div>
-                    <button class="btn-primary" onclick="saveWorkout()">Salvar Ficha</button>
+                    <div class="form-group">
+                        <label>Professor Responsável</label>
+                        <input type="text" id="workoutTeacher" class="form-control" placeholder="Seu nome ou do professor">
+                    </div>
+                    <button class="btn-primary" onclick="saveWorkout()"><i class="fas fa-save"></i> Salvar Ficha</button>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-history"></i> Histórico de Treinos</h3>
+                    </div>
+                    <div id="workoutsList"></div>
                 </div>
             </div>
 
-            <!-- SETTINGS SECTION -->
+            <!-- CHECK-IN -->
+            <div id="checkins" class="section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-fingerprint"></i> Registrar Check-in</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Selecionar Aluno *</label>
+                        <select id="checkinStudent" class="form-control"></select>
+                    </div>
+                    <button class="btn-primary" onclick="registerCheckin()">
+                        <i class="fas fa-check-circle"></i> Registrar Entrada
+                    </button>
+                    
+                    <div style="margin-top: 24px; padding: 16px; background: var(--bg-body); border-radius: 12px;">
+                        <h4 style="margin-bottom: 12px;"><i class="fas fa-info-circle"></i> Regras de Check-in</h4>
+                        <ul style="font-size: 0.9rem; color: var(--text-muted); padding-left: 20px; line-height: 1.8;">
+                            <li>✅ Apenas alunos <strong>ativos</strong> podem fazer check-in</li>
+                            <li>✅ Limite: <strong>1 check-in por dia</strong> (configurável)</li>
+                            <li>✅ Registro automático de data e hora</li>
+                            <li>🔒 Alunos inadimplentes ou bloqueados são impedidos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Frequência Hoje</h3>
+                    </div>
+                    <div id="checkinsToday" class="result-card" style="background: var(--primary); color: white; text-align: center; padding: 20px; border-radius: 12px;">
+                        <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div style="font-size: 2rem; font-weight: 800;" id="checkinsCount">0</div>
+                        <div style="opacity: 0.9;">check-ins realizados hoje</div>
+                    </div>
+                    
+                    <h4 style="margin: 24px 0 12px;">Últimos Check-ins</h4>
+                    <div id="checkinsList"></div>
+                </div>
+            </div>
+
+            <!-- RELATÓRIOS -->
+            <div id="reports" class="section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-file-alt"></i> Relatórios Profissionais</h3>
+                    </div>
+                    
+                    <div class="tabs">
+                        <div class="tab active" onclick="showReport('revenue', this)">Receita</div>
+                        <div class="tab" onclick="showReport('students', this)">Alunos</div>
+                        <div class="tab" onclick="showReport('frequency', this)">Frequência</div>
+                        <div class="tab" onclick="showReport('plans', this)">Planos</div>
+                    </div>
+                    
+                    <div id="reportContent">
+                        <!-- Dynamic content -->
+                        <div class="dashboard-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="reportTotalRevenue">R$ 0</div>
+                                <div class="stat-label">Receita Total</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="reportActiveStudents">0</div>
+                                <div class="stat-label">Alunos Ativos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="reportAvgFrequency">0</div>
+                                <div class="stat-label">Frequência Média</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="reportTopPlan">-</div>
+                                <div class="stat-label">Plano Mais Vendido</div>
+                            </div>
+                        </div>
+                        
+                        <canvas id="reportChart" height="150" style="margin-top: 24px;"></canvas>
+                        
+                        <div style="margin-top: 24px; display: flex; gap: 12px;">
+                            <button class="btn-export pdf" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+                            <button class="btn-export excel" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONFIGURAÇÕES -->
             <div id="settings" class="section">
                 <div class="content-card">
                     <div class="card-header">
                         <h3 class="card-title"><i class="fas fa-cog"></i> Configurações do Sistema</h3>
                     </div>
+                    
                     <div class="form-group">
                         <label>Nome da Academia</label>
-                        <input type="text" class="form-control" value="GYM PRO ELITE">
+                        <input type="text" id="configAcademyName" class="form-control" onchange="saveConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>URL do Logo</label>
+                        <input type="url" id="configLogoUrl" class="form-control" placeholder="https://..." onchange="saveConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>Cor Primária</label>
+                        <div class="color-picker-group">
+                            <input type="color" id="configPrimaryColor" class="color-picker" value="#10b981" onchange="updatePrimaryColor(this.value)">
+                            <div class="color-preview" id="colorPreview"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Moeda</label>
+                        <select id="configCurrency" class="form-control" onchange="saveConfig()">
+                            <option value="BRL">Real (R$)</option>
+                            <option value="USD">Dólar ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Responsável Técnico (CREF)</label>
-                        <input type="text" class="form-control" placeholder="Nome e Número">
+                        <input type="text" id="configCref" class="form-control" onchange="saveConfig()">
                     </div>
-                    <div style="margin-top: 20px; padding: 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);">
-                        <h4 style="color: #ef4444; margin-bottom: 10px;"><i class="fas fa-exclamation-triangle"></i> Zona de Perigo</h4>
-                        <button class="btn-primary" style="background: #ef4444;" onclick="resetSystem()">Resetar Todo o Sistema</button>
+                    
+                    <h4 style="margin: 24px 0 12px;">Parâmetros do Sistema</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Multa por Atraso (%)</label>
+                            <input type="number" id="configLateFee" class="form-control" value="2" step="0.1" onchange="saveConfig()">
+                        </div>
+                        <div class="form-group">
+                            <label>Juros Diários (%)</label>
+                            <input type="number" id="configDailyInterest" class="form-control" value="0.1" step="0.01" onchange="saveConfig()">
+                        </div>
+                        <div class="form-group">
+                            <label>Dias de Carência</label>
+                            <input type="number" id="configGraceDays" class="form-control" value="3" onchange="saveConfig()">
+                        </div>
+                        <div class="form-group">
+                            <label>Check-ins/Dia</label>
+                            <input type="number" id="configMaxCheckins" class="form-control" value="1" min="1" max="3" onchange="saveConfig()">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px; display: flex; gap: 12px;">
+                        <button class="btn-primary" onclick="applyConfig()"><i class="fas fa-check"></i> Aplicar</button>
+                        <button class="btn-secondary" onclick="resetConfig()"><i class="fas fa-undo"></i> Restaurar</button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-exclamation-triangle"></i> Zona de Perigo</h3>
+                    </div>
+                    <button class="btn-danger" onclick="resetSystem()"><i class="fas fa-trash"></i> Resetar Todo o Sistema</button>
+                    
+                    <div class="legal-notice">
+                        <strong>⚠️ Aviso Legal LGPD:</strong><br>
+                        Este sistema armazena dados localmente no navegador. O CPF dos alunos é mascarado na interface e protegido via encoding básico. 
+                        Para conformidade total com a LGPD em ambiente de produção, recomenda-se: (1) realizar backups regulares, 
+                        (2) utilizar HTTPS, (3) integrar com backend seguro para dados sensíveis, 
+                        (4) obter consentimento explícito dos titulares para tratamento de dados.
                     </div>
                 </div>
                 
@@ -718,10 +1529,12 @@ body {
                         <h3 class="card-title"><i class="fas fa-info-circle"></i> Sobre</h3>
                     </div>
                     <p style="color: var(--text-muted); line-height: 1.6;">
-                        <strong>GYM PRO ELITE v2.5.0</strong><br>
-                        Sistema completo de gestão para academias de pequeno e médio porte.<br>
-                        Desenvolvido com tecnologias web modernas para máxima performance.<br><br>
-                        Licença: Comercial Single-User
+                        <strong>GYM PRO ELITE v3.0.0 Professional</strong><br>
+                        Sistema completo de gestão para academias.<br><br>
+                        <strong>Funcionalidades:</strong> Gestão de alunos, financeiro, treinos, check-in, relatórios, backup.<br>
+                        <strong>Tecnologia:</strong> HTML5, CSS3, JavaScript puro + Chart.js + SweetAlert2.<br>
+                        <strong>Licença:</strong> Comercial Single-User • Atualizações por 1 ano.<br>
+                        <strong>Suporte:</strong> suporte@gymproelite.com.br
                     </p>
                 </div>
             </div>
@@ -731,429 +1544,760 @@ body {
 
     <!-- MOBILE NAV -->
     <nav class="mobile-nav">
-        <div class="mobile-nav-item active" onclick="navTo('dashboard')">
-            <i class="fas fa-th-large"></i>
-            <span>Início</span>
-        </div>
-        <div class="mobile-nav-item" onclick="navTo('students')">
-            <i class="fas fa-users"></i>
-            <span>Alunos</span>
-        </div>
-        <div class="mobile-nav-item" onclick="navTo('finance')">
-            <i class="fas fa-chart-line"></i>
-            <span>$</span>
-        </div>
-        <div class="mobile-nav-item" onclick="navTo('settings')">
-            <i class="fas fa-cog"></i>
-            <span>Ajustes</span>
-        </div>
+        <div class="mobile-nav-item active" onclick="navTo('dashboard')"><i class="fas fa-th-large"></i><span>Início</span></div>
+        <div class="mobile-nav-item" onclick="navTo('students')"><i class="fas fa-users"></i><span>Alunos</span></div>
+        <div class="mobile-nav-item" onclick="navTo('finance')"><i class="fas fa-chart-line"></i><span>$</span></div>
+        <div class="mobile-nav-item" onclick="navTo('settings')"><i class="fas fa-cog"></i><span>Ajustes</span></div>
     </nav>
 </div>
 
+<!-- UPDATE BADGE -->
+<div class="update-badge" id="updateBadge" onclick="handleUpdateClick()">
+    <i class="fas fa-rocket"></i> <span>Nova versão disponível!</span>
+</div>
+
 <script>
-// ==================== STATE & CONFIG ====================
+// ==================== CONFIGURAÇÃO GLOBAL ====================
+const CONFIG = {
+    academyName: "GYM PRO ELITE",
+    logoUrl: "",
+    primaryColor: "#10b981",
+    currency: "BRL",
+    timezone: "America/Sao_Paulo",
+    version: "3.0.0",
+    lateFee: 2,           // Multa por atraso (%)
+    dailyInterest: 0.1,   // Juros diários (%)
+    graceDays: 3,         // Dias de carência
+    maxCheckinsPerDay: 1, // Limite de check-ins por dia
+    updateUrl: "https://api.gymproelite.com/version.json"
+};
+
+// Carregar config salva
+function loadConfig() {
+    const saved = localStorage.getItem('gym_config_v3');
+    if (saved) Object.assign(CONFIG, JSON.parse(saved));
+    applyConfigToUI();
+}
+
+function saveConfig() {
+    CONFIG.academyName = document.getElementById('configAcademyName')?.value || CONFIG.academyName;
+    CONFIG.logoUrl = document.getElementById('configLogoUrl')?.value || "";
+    CONFIG.currency = document.getElementById('configCurrency')?.value || "BRL";
+    CONFIG.cref = document.getElementById('configCref')?.value || "";
+    CONFIG.lateFee = parseFloat(document.getElementById('configLateFee')?.value) || 2;
+    CONFIG.dailyInterest = parseFloat(document.getElementById('configDailyInterest')?.value) || 0.1;
+    CONFIG.graceDays = parseInt(document.getElementById('configGraceDays')?.value) || 3;
+    CONFIG.maxCheckinsPerDay = parseInt(document.getElementById('configMaxCheckins')?.value) || 1;
+    localStorage.setItem('gym_config_v3', JSON.stringify(CONFIG));
+}
+
+function applyConfigToUI() {
+    document.getElementById('loginAcademyName').textContent = CONFIG.academyName;
+    document.getElementById('loginVersion').textContent = CONFIG.academyName;
+    document.getElementById('sidebarAcademyName').textContent = CONFIG.academyName.length > 12 ? CONFIG.academyName.substring(0,12)+'...' : CONFIG.academyName;
+    
+    const logo = document.getElementById('academyLogo');
+    if (logo && CONFIG.logoUrl) { logo.src = CONFIG.logoUrl; logo.style.display = 'block'; }
+    
+    if (document.getElementById('configAcademyName')) {
+        document.getElementById('configAcademyName').value = CONFIG.academyName;
+        document.getElementById('configLogoUrl').value = CONFIG.logoUrl;
+        document.getElementById('configPrimaryColor').value = CONFIG.primaryColor;
+        document.getElementById('configCurrency').value = CONFIG.currency;
+        document.getElementById('configCref').value = CONFIG.cref || '';
+        document.getElementById('configLateFee').value = CONFIG.lateFee;
+        document.getElementById('configDailyInterest').value = CONFIG.dailyInterest;
+        document.getElementById('configGraceDays').value = CONFIG.graceDays;
+        document.getElementById('configMaxCheckins').value = CONFIG.maxCheckinsPerDay;
+    }
+    
+    document.getElementById('colorPreview').style.background = CONFIG.primaryColor;
+    updatePrimaryColor(CONFIG.primaryColor);
+}
+
+function updatePrimaryColor(color) {
+    document.documentElement.style.setProperty('--primary', color);
+    const dark = shadeColor(color, -20);
+    document.documentElement.style.setProperty('--primary-dark', dark);
+    CONFIG.primaryColor = color;
+    if (document.getElementById('colorPreview')) document.getElementById('colorPreview').style.background = color;
+}
+
+function shadeColor(color, percent) {
+    let R = parseInt(color.substring(1,3),16), G = parseInt(color.substring(3,5),16), B = parseInt(color.substring(5,7),16);
+    R = Math.max(0, Math.min(255, R + percent*255/100));
+    G = Math.max(0, Math.min(255, G + percent*255/100));
+    B = Math.max(0, Math.min(255, B + percent*255/100));
+    return '#'+[R,G,B].map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');
+}
+
+function applyConfig() {
+    saveConfig();
+    applyConfigToUI();
+    Swal.fire({icon:'success',title:'Configurações Aplicadas!',timer:2000,showConfirmButton:false});
+}
+
+function resetConfig() {
+    Swal.fire({title:'Restaurar Padrão?',text:'Isso voltará às configurações originais.',icon:'question',showCancelButton:true,confirmButtonText:'Sim',confirmButtonColor:'#ef4444'}).then(r=>{
+        if(r.isConfirmed){localStorage.removeItem('gym_config_v3');loadConfig();Swal.fire('Restaurado!','','success');}
+    });
+}
+
+// ==================== BANCO DE DADOS ====================
 const DB = {
-    students: JSON.parse(localStorage.getItem('gym_students')) || [],
-    payments: JSON.parse(localStorage.getItem('gym_payments')) || [],
-    workouts: JSON.parse(localStorage.getItem('gym_workouts')) || [],
-    checkins: JSON.parse(localStorage.getItem('gym_checkins')) || [],
+    students: JSON.parse(localStorage.getItem('gym_students_v3')) || [],
+    payments: JSON.parse(localStorage.getItem('gym_payments_v3')) || [],
+    expenses: JSON.parse(localStorage.getItem('gym_expenses_v3')) || [],
+    workouts: JSON.parse(localStorage.getItem('gym_workouts_v3')) || [],
+    checkins: JSON.parse(localStorage.getItem('gym_checkins_v3')) || [],
+    transactions: JSON.parse(localStorage.getItem('gym_transactions_v3')) || [],
+    
     save: () => {
-        localStorage.setItem('gym_students', JSON.stringify(DB.students));
-        localStorage.setItem('gym_payments', JSON.stringify(DB.payments));
-        localStorage.setItem('gym_workouts', JSON.stringify(DB.workouts));
-        localStorage.setItem('gym_checkins', JSON.stringify(DB.checkins));
+        localStorage.setItem('gym_students_v3', JSON.stringify(DB.students));
+        localStorage.setItem('gym_payments_v3', JSON.stringify(DB.payments));
+        localStorage.setItem('gym_expenses_v3', JSON.stringify(DB.expenses));
+        localStorage.setItem('gym_workouts_v3', JSON.stringify(DB.workouts));
+        localStorage.setItem('gym_checkins_v3', JSON.stringify(DB.checkins));
+        localStorage.setItem('gym_transactions_v3', JSON.stringify(DB.transactions));
         updateDashboard();
     }
 };
 
 let currentUser = null;
 let charts = {};
+let currentFilter = { students: 'all', finance: 'month' };
 
-// ==================== AUTH SYSTEM ====================
+// ==================== VALIDAÇÃO DE CPF ====================
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g,'');
+    if(cpf.length!==11||/^(\d)\1+$/.test(cpf))return false;
+    let s=0,r;
+    for(let i=1;i<=9;i++)s+=parseInt(cpf.substring(i-1,i))*(11-i);
+    r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(cpf.substring(9,10)))return false;
+    s=0;for(let i=1;i<=10;i++)s+=parseInt(cpf.substring(i-1,i))*(12-i);
+    r=(s*10)%11;if(r===10||r===11)r=0;return r===parseInt(cpf.substring(10,11));
+}
+
+function formatCPF(input) {
+    let v = input.value.replace(/\D/g,'').slice(0,11);
+    v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    input.value = v;
+}
+
+// ==================== UTILITÁRIOS ====================
+function formatCurrency(v) {
+    const sym = {BRL:'R$',USD:'$',EUR:'€'}, loc = {BRL:'pt-BR',USD:'en-US',EUR:'de-DE'};
+    return `${sym[CONFIG.currency]||'R$'} ${v.toLocaleString(loc[CONFIG.currency]||'pt-BR',{minimumFractionDigits:2})}`;
+}
+
+function formatDate(d) { return new Date(d).toLocaleDateString('pt-BR'); }
+function parseDateSafe(s) { if(!s)return new Date(); const [y,m,d]=s.split('T')[0].split('-'); return new Date(Date.UTC(+y,+m-1,+d)); }
+
+function getStudentStatus(s) {
+    if(s.status==='bloqueado')return'bloqueado';
+    if(s.status==='cancelado')return'cancelado';
+    const venc = parseDateSafe(s.expiry);
+    const hoje = new Date(); hoje.setUTCHours(0,0,0,0);
+    return venc < hoje ? 'inadimplente' : 'ativo';
+}
+
+function studentCanCheckin(s) {
+    return getStudentStatus(s)==='ativo';
+}
+
+function debounce(fn,wait){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),wait);};}
+
+// ==================== LANDING PAGE ====================
+function showLogin() {
+    document.getElementById('landingPage').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function openCheckout() {
+    document.getElementById('checkoutModal').classList.add('show');
+    document.getElementById('checkoutStep1').style.display = 'block';
+    document.getElementById('checkoutStep2').style.display = 'none';
+    document.getElementById('checkoutStep3').style.display = 'none';
+    document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===0));
+}
+
+function closeCheckout() { document.getElementById('checkoutModal').classList.remove('show'); }
+
+function nextCheckoutStep() {
+    const name = document.getElementById('buyerName').value;
+    const email = document.getElementById('buyerEmail').value;
+    const academy = document.getElementById('buyerAcademy').value;
+    
+    if(!name||!email||!academy){Swal.fire('Preencha todos os campos obrigatórios','','warning');return;}
+    
+    document.getElementById('checkoutStep1').style.display = 'none';
+    document.getElementById('checkoutStep2').style.display = 'block';
+    document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===1));
+}
+
+function selectPayment(method) {
+    document.querySelectorAll('.payment-method').forEach(el=>el.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+}
+
+
+
+function processPayment() {
+    // Simulação de pagamento - em produção, integrar com Mercado Pago API
+    Swal.fire({title:'Processando pagamento...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+    
+    setTimeout(()=>{
+        const email = document.getElementById('buyerEmail').value;
+        const academy = document.getElementById('buyerAcademy').value;
+        
+        document.getElementById('checkoutStep2').style.display = 'none';
+        document.getElementById('checkoutStep3').style.display = 'block';
+        document.getElementById('confirmationEmail').textContent = email;
+        document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===2));
+        
+        // Gerar credenciais aleatórias
+        const user = 'admin_'+Math.random().toString(36).substring(2,6);
+        const pass = Math.random().toString(36).substring(2,10)+'!';
+        document.getElementById('genUser').textContent = user;
+        document.getElementById('genPass').textContent = pass;
+        
+        // Salvar novo usuário no localStorage (simulação)
+        const newUser = {username:user,password:btoa(pass),academy:academy,email:email,createdAt:new Date().toISOString()};
+        const users = JSON.parse(localStorage.getItem('gym_users')||'[]');
+        users.push(newUser);
+        localStorage.setItem('gym_users',JSON.stringify(users));
+        
+        Swal.fire({icon:'success',title:'Pagamento Aprovado!',text:'Credenciais enviadas por e-mail',timer:3000,showConfirmButton:false});
+    },2000);
+}
+
+
+
+
+//Integração com Mercado Pago (Produção)
+// Substituir no processPayment():
+// const mp = new MercadoPago('YOUR_PUBLIC_KEY', {locale: 'pt-BR'});
+// const payment = await mp.payments.create({
+//   transaction_amount: 297.00,
+//   description: 'Licença GYM PRO ELITE',
+//   payment_method_id: selectedMethod, // 'pix', 'visa', etc.
+//   payer: {email: buyerEmail, name: buyerName}
+// });
+// Redirecionar para payment.init_point ou mostrar QR Code Pix
+
+
+
+
+
+
+
+function completePurchase() {
+    closeCheckout();
+    document.getElementById('landingPage').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    Swal.fire({icon:'success',title:'Bem-vindo!',text:'Use as credenciais recebidas para acessar o sistema.'});
+}
+
+function showTerms() { Swal.fire('Termos de Uso','Conteúdo dos termos...','info'); }
+function showPrivacy() { Swal.fire('Política de Privacidade','Conteúdo da política...','info'); }
+
+// ==================== AUTH ====================
 function handleLogin(e) {
     e.preventDefault();
     const user = document.getElementById('loginUser').value;
     const pass = document.getElementById('loginPass').value;
-
-    // Simulação de Login (Em produção, usar API real)
-    if ((user === 'admin' && pass === 'admin') || (user === 'demo' && pass === 'demo')) {
-        currentUser = { name: user === 'admin' ? 'Administrador' : 'Demonstração', role: 'admin' };
-        document.getElementById('loginScreen').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'flex';
-            document.getElementById('loadingOverlay').style.display = 'none';
+    
+    // Verificar usuários cadastrados
+    const users = JSON.parse(localStorage.getItem('gym_users')||'[]');
+    const found = users.find(u=>u.username===user&&btoa(pass)===u.password);
+    
+    // Fallback para demo
+    if((user==='admin'&&pass==='admin')||found){
+        currentUser = {
+            name: found?found.academy:'Administrador',
+            role: 'admin',
+            username: user
+        };
+        document.getElementById('loginScreen').style.opacity='0';
+        setTimeout(()=>{
+            document.getElementById('loginScreen').style.display='none';
+            document.getElementById('appContainer').style.display='flex';
+            document.getElementById('loadingOverlay')?.remove();
             initApp();
-        }, 500);
-    } else {
-        Swal.fire('Erro', 'Usuário ou senha inválidos', 'error');
-    }
+        },400);
+    }else{Swal.fire('Erro','Usuário ou senha inválidos','error');}
+}
+
+function showUserMenu() {
+    Swal.fire({
+        title:`<i class="fas fa-user-circle"></i> ${currentUser?.name||'Usuário'}`,
+        html:`<p><strong>Nível:</strong> ${currentUser?.role==='admin'?'🔑 Admin':currentUser?.role==='teacher'?'👨‍🏫 Professor':'👤 Recepção'}</p>
+              <p><strong>Academia:</strong> ${CONFIG.academyName}</p>`,
+        showCancelButton:true,confirmButtonText:'Sair',cancelButtonText:'Fechar',confirmButtonColor:'#ef4444'
+    }).then(r=>{if(r.isConfirmed)location.reload();});
 }
 
 function handleLogout() {
-    Swal.fire({
-        title: 'Sair do sistema?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sim, sair'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            location.reload();
+    Swal.fire({title:'Sair?',icon:'question',showCancelButton:true,confirmButtonText:'Sim',confirmButtonColor:'#ef4444'}).then(r=>{if(r.isConfirmed)location.reload();});
+}
+
+function showForgotPassword() {
+    Swal.fire('Recuperação','Contate: suporte@gymproelite.com.br','info');
+}
+
+// ==================== NAVEGAÇÃO & PERMISSÕES ====================
+function navTo(section) {
+    // Verificar permissão
+    const item = document.querySelector(`.menu-item[onclick="navTo('${section}')"]`);
+    if(item?.dataset.permission){
+        const perms = item.dataset.permission.split(',');
+        if(!perms.includes(currentUser?.role)&&!perms.includes('all')){
+            Swal.fire('Acesso Negado','Você não tem permissão para esta área.','warning');
+            return;
         }
-    });
-}
-
-// ==================== NAVIGATION ====================
-function navTo(sectionId) {
-    // Update Sidebar
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-    
-    // Find matching menu items (simple logic)
-    const menuMap = { 'dashboard': 0, 'students': 1, 'finance': 2, 'workouts': 3, 'settings': 4 };
-    if(document.querySelectorAll('.menu-item')[menuMap[sectionId]]) {
-        document.querySelectorAll('.menu-item')[menuMap[sectionId]].classList.add('active');
-        document.querySelectorAll('.mobile-nav-item')[menuMap[sectionId] === 4 ? 3 : menuMap[sectionId]].classList.add('active');
     }
-
-    // Update Content
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
     
-    // Update Title
-    const titles = { 'dashboard': 'Dashboard', 'students': 'Gestão de Alunos', 'finance': 'Financeiro', 'workouts': 'Treinos', 'settings': 'Configurações' };
-    document.getElementById('pageTitle').innerText = titles[sectionId];
-
-    // Mobile: Close sidebar if open
+    document.querySelectorAll('.menu-item,.mobile-nav-item').forEach(el=>el.classList.remove('active'));
+    document.querySelector(`.menu-item[onclick="navTo('${section}')"]`)?.classList.add('active');
+    document.querySelector(`.mobile-nav-item[onclick="navTo('${section}')"]`)?.classList.add('active');
+    
+    document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
+    
+    const titles = {dashboard:'Dashboard',students:'Alunos',finance:'Financeiro',workouts:'Treinos',checkins:'Check-in',reports:'Relatórios',settings:'Configurações'};
+    document.getElementById('pageTitle').textContent = titles[section]||'GYM PRO ELITE';
+    
     document.getElementById('sidebar').classList.remove('open');
-
-    // Refresh data based on section
-    if(sectionId === 'students') renderStudents();
-    if(sectionId === 'finance') renderFinance();
-    if(sectionId === 'workouts') renderWorkoutSelects();
-    if(sectionId === 'dashboard') updateDashboard();
+    
+    // Refresh data
+    if(section==='students')renderStudents();
+    if(section==='finance')renderFinance();
+    if(section==='workouts')renderWorkoutSelects();
+    if(section==='checkins'){renderCheckinSelects();renderCheckinsToday();}
+    if(section==='reports')showReport('revenue');
+    if(section==='dashboard')updateDashboard();
 }
 
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-}
-
-function toggleTheme() {
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function toggleTheme(){
     document.body.classList.toggle('dark-mode');
-    const icon = document.querySelector('.btn-icon[onclick="toggleTheme()"] i');
-    icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
-    // Redraw charts to update colors
+    const icon=document.querySelector('.btn-icon[onclick="toggleTheme()"] i');
+    icon.className=document.body.classList.contains('dark-mode')?'fas fa-sun':'fas fa-moon';
     updateDashboard();
 }
 
-// ==================== CORE FUNCTIONS ====================
+// ==================== INICIALIZAÇÃO ====================
 function initApp() {
-    document.getElementById('userNameDisplay').innerText = currentUser.name;
-    document.getElementById('userAvatar').innerText = currentUser.name.charAt(0);
+    loadConfig();
     
-    // Responsive check
-    if (window.innerWidth <= 900) {
-        document.getElementById('menuToggle').style.display = 'block';
-    }
-
+    if(window.innerWidth<=900)document.getElementById('menuToggle').style.display='block';
+    
+    document.getElementById('userNameDisplay').textContent = currentUser?.name||'Usuário';
+    document.getElementById('userAvatar').textContent = (currentUser?.name||'U').charAt(0);
+    document.getElementById('userRoleDisplay').textContent = {admin:'Administrador',teacher:'Professor',reception:'Recepção'}[currentUser?.role]||'Usuário';
+    
+    // Aplicar permissões no menu
+    document.querySelectorAll('.menu-item').forEach(item=>{
+        const perms = item.dataset.permission?.split(',')||['all'];
+        if(!perms.includes(currentUser?.role)&&!perms.includes('all'))item.style.display='none';
+    });
+    
     updateDashboard();
+    if("Notification"in window&&Notification.permission!=='granted')Notification.requestPermission();
     
-    // Check notifications permission
-    if ("Notification" in window && Notification.permission !== "granted") {
-        Notification.requestPermission();
-    }
+    setTimeout(verificarAtualizacoes,30000);
 }
 
+// ==================== DASHBOARD ====================
 function updateDashboard() {
-    // Stats
-    const today = new Date().toDateString();
-    const active = DB.students.filter(s => new Date(s.expiry) > new Date()).length;
-    const revenue = DB.payments.reduce((acc, curr) => acc + curr.value, 0);
-    const checkinsToday = DB.checkins.filter(c => new Date(c.date).toDateString() === today).length;
-
-    document.getElementById('dashTotalStudents').innerText = DB.students.length;
-    document.getElementById('dashActiveStudents').innerText = active;
-    document.getElementById('dashRevenue').innerText = `R$ ${revenue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    document.getElementById('dashCheckins').innerText = checkinsToday;
-
-    // Charts
+    const ativos = DB.students.filter(s=>getStudentStatus(s)==='ativo').length;
+    const receita = DB.payments.filter(p=>{const d=new Date(p.date);const h=new Date();return d.getMonth()===h.getMonth()&&d.getFullYear()===h.getFullYear();}).reduce((a,p)=>a+p.value,0);
+    const retencao = DB.students.length>0?((ativos/DB.students.length)*100).toFixed(1):0;
+    
+    document.getElementById('dashTotal').textContent = DB.students.length;
+    document.getElementById('dashActive').textContent = ativos;
+    document.getElementById('dashRevenue').textContent = formatCurrency(receita);
+    document.getElementById('dashRetention').textContent = `${retencao}%`;
+    
+    const badge = document.getElementById('retentionBadge');
+    badge.className = `retention-badge ${retencao>=75?'high':retencao>=50?'medium':'low'}`;
+    document.getElementById('retentionValue').textContent = `${retencao}%`;
+    
     renderCharts();
 }
 
 function renderCharts() {
-    const ctxFreq = document.getElementById('chartFrequency').getContext('2d');
-    const ctxPlans = document.getElementById('chartPlans').getContext('2d');
+    const ctxF=document.getElementById('chartFrequency')?.getContext('2d');
+    const ctxP=document.getElementById('chartPlans')?.getContext('2d');
+    if(!ctxF||!ctxP)return;
     
-    const isDark = document.body.classList.contains('dark-mode');
-    const textColor = isDark ? '#94a3b8' : '#64748b';
-    const gridColor = isDark ? '#334155' : '#e2e8f0';
-
-    if (charts.freq) charts.freq.destroy();
-    if (charts.plan) charts.plan.destroy();
-
-    // Frequency Data (Last 7 days)
-    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    const freqData = days.map((_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return DB.checkins.filter(c => new Date(c.date).toDateString() === d.toDateString()).length;
-    });
-
-    charts.freq = new Chart(ctxFreq, {
-        type: 'line',
-        data: {
-            labels: days,
-            datasets: [{
-                label: 'Check-ins',
-                data: freqData,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: textColor }, grid: { display: false } },
-                y: { ticks: { color: textColor }, grid: { color: gridColor }, beginAtZero: true }
-            }
-        }
-    });
-
-    // Plans Data
-    const plans = { '30': 0, '90': 0, '365': 0 };
-    DB.students.forEach(s => { if(plans[s.plan] !== undefined) plans[s.plan]++; });
-
-    charts.plan = new Chart(ctxPlans, {
-        type: 'doughnut',
-        data: {
-            labels: ['Mensal', 'Trimestral', 'Anual'],
-            datasets: [{
-                data: [plans['30'], plans['90'], plans['365']],
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
-        }
-    });
+    const dark=document.body.classList.contains('dark-mode');
+    const tc=dark?'#94a3b8':'#64748b',gc=dark?'#334155':'#e2e8f0';
+    
+    if(charts.freq)charts.freq.destroy();
+    if(charts.plan)charts.plan.destroy();
+    
+    const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const freq=days.map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return DB.checkins.filter(c=>new Date(c.date).toDateString()===d.toDateString()).length;});
+    
+    charts.freq=new Chart(ctxF,{type:'line',data:{labels:days,datasets:[{label:'Check-ins',data:freq,borderColor:CONFIG.primaryColor,backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc},grid:{display:false}},y:{ticks:{color:tc},grid:{color:gc},beginAtZero:true}}}});
+    
+    const plans={30:0,90:0,180:0,365:0,custom:0};DB.students.forEach(s=>{if(plans[s.plan]!==undefined)plans[s.plan]++;});
+    charts.plan=new Chart(ctxP,{type:'doughnut',data:{labels:['Mensal','Trim.','Sem.','Anual','Custom'],datasets:[{data:[plans[30],plans[90],plans[180],plans[365],plans.custom],backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#64748b'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:tc}}}}});
 }
 
-// ==================== STUDENTS MODULE ====================
+// ==================== ALUNOS ====================
 function registerStudent(e) {
     e.preventDefault();
-    const name = document.getElementById('stuName').value;
-    const cpf = document.getElementById('stuCpf').value;
-    const planDays = parseInt(document.getElementById('stuPlan').value);
+    const name=document.getElementById('stuName').value.trim();
+    const cpf=document.getElementById('stuCpf').value.replace(/\D/g,'');
+    const birth=document.getElementById('stuBirth').value;
+    const phone=document.getElementById('stuPhone').value;
+    const email=document.getElementById('stuEmail').value;
+    const plan=document.getElementById('stuPlan').value;
+    const paymentMethod=document.getElementById('stuPaymentMethod').value;
     
-    // Simple validation
-    if (DB.students.find(s => s.cpf === cpf)) {
-        Swal.fire('Erro', 'CPF já cadastrado', 'error');
-        return;
-    }
-
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + planDays);
+    if(!validarCPF(cpf)){Swal.fire('CPF Inválido','Verifique os dígitos do CPF.','error');return;}
+    if(DB.students.some(s=>s.cpf===cpf&&!s.deletedAt)){Swal.fire('CPF Duplicado','Este CPF já está cadastrado.','error');return;}
     
-    const newStudent = {
-        id: Date.now(),
-        name, cpf,
-        plan: planDays,
-        expiry: expiry.toISOString(),
-        status: 'active'
+    const days=plan==='custom'?30:parseInt(plan);
+    const prices={30:120,90:320,180:600,365:1200,custom:120};
+    const expiry=new Date();expiry.setDate(expiry.getDate()+days);
+    
+    const student={
+        id:Date.now(),name,cpf,birth,phone,email,plan,days,expiry:expiry.toISOString(),
+        paymentMethod,status:'ativo',createdAt:new Date().toISOString(),deletedAt:null
     };
-
-    DB.students.push(newStudent);
     
-    // Add initial payment
-    const prices = { 30: 120, 90: 320, 365: 1200 };
-    DB.payments.push({
-        id: Date.now(),
-        studentId: newStudent.id,
-        studentName: name,
-        value: prices[planDays],
-        date: new Date().toISOString(),
-        type: 'Mensalidade'
-    });
-
+    DB.students.push(student);
+    DB.payments.push({id:Date.now(),studentId:student.id,studentName:name,value:prices[plan]||120,type:'Mensalidade',method:paymentMethod,status:'pago',date:new Date().toISOString()});
+    DB.transactions.push({id:Date.now(),type:'income',category:'Mensalidade',description:`${name} - ${plan}`,value:prices[plan]||120,date:new Date().toISOString()});
+    
     DB.save();
-    document.getElementById('stuName').value = '';
-    document.getElementById('stuCpf').value = '';
-    Swal.fire('Sucesso', 'Aluno cadastrado com sucesso!', 'success');
+    e.target.reset();
+    Swal.fire('Cadastrado!',`${name} registrado com sucesso.`,'success');
     renderStudents();
 }
 
-function renderStudents(filter = '') {
-    const tbody = document.getElementById('studentsTableBody');
-    tbody.innerHTML = '';
-
-    const filtered = DB.students.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()) || s.cpf.includes(filter));
-
-    filtered.forEach(s => {
-        const isExpired = new Date(s.expiry) < new Date();
-        const statusClass = isExpired ? 'badge-danger' : 'badge-success';
-        const statusText = isExpired ? 'Inadimplente' : 'Ativo';
-        const expiryDate = new Date(s.expiry).toLocaleDateString('pt-BR');
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+function renderStudents(filter='all',search='') {
+    const tbody=document.getElementById('studentsTableBody');
+    if(!tbody)return;
+    
+    let list=DB.students.filter(s=>!s.deletedAt);
+    if(filter!=='all')list=list.filter(s=>getStudentStatus(s)===filter);
+    if(search){const t=search.toLowerCase();list=list.filter(s=>s.name.toLowerCase().includes(t)||s.cpf.includes(t));}
+    
+    tbody.innerHTML=list.length?list.map(s=>{
+        const status=getStudentStatus(s),statusClass={ativo:'badge-success',inadimplente:'badge-danger',bloqueado:'badge-blocked',cancelado:'badge-secondary'}[status];
+        return `<tr>
+            <td><div style="font-weight:600">${s.name}</div><div style="font-size:0.8rem;color:var(--text-muted)">CPF: ${s.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4')}</div></td>
+            <td>${{30:'Mensal',90:'Trim.',180:'Sem.',365:'Anual',custom:'Custom'}[s.plan]||'-'}</td>
+            <td>${formatDate(s.expiry)}</td>
+            <td><span class="badge ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
             <td>
-                <div style="font-weight: 600;">${s.name}</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">CPF: ${s.cpf}</div>
+                <button class="btn-icon" style="width:30px;height:30px;display:inline-flex" onclick="renewStudent(${s.id})" title="Renovar"><i class="fas fa-sync"></i></button>
+                <button class="btn-icon" style="width:30px;height:30px;display:inline-flex;color:#64748b" onclick="toggleBlock(${s.id})" title="Bloquear"><i class="fas fa-lock"></i></button>
+                <button class="btn-icon" style="width:30px;height:30px;display:inline-flex;color:#ef4444" onclick="softDelete(${s.id})" title="Cancelar"><i class="fas fa-times"></i></button>
             </td>
-            <td>${s.plan === 30 ? 'Mensal' : s.plan === 90 ? 'Trim.' : 'Anual'}</td>
-            <td>${expiryDate}</td>
-            <td><span class="badge ${statusClass}">${statusText}</span></td>
-            <td>
-                <button class="btn-icon" style="width: 30px; height: 30px; display: inline-flex;" onclick="renewStudent(${s.id})" title="Renovar"><i class="fas fa-sync"></i></button>
-                <button class="btn-icon" style="width: 30px; height: 30px; display: inline-flex; color: #ef4444;" onclick="deleteStudent(${s.id})" title="Excluir"><i class="fas fa-trash"></i></button>
-            </td>
-        `;
-        tbody.appendChild(tr);
+        </tr>`;
+    }).join(''):'<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Nenhum aluno encontrado</td></tr>';
+}
+
+const filterStudents=debounce((val)=>renderStudents(currentFilter.students,val),300);
+function filterByStatus(status,el){currentFilter.students=status;document.querySelectorAll('#students .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderStudents(status);}
+
+function renewStudent(id) {
+    const s=DB.students.find(x=>x.id===id);
+    if(!s)return;
+    const newExp=new Date(s.expiry<new Date()?new Date():s.expiry);
+    newExp.setDate(newExp.getDate()+30);
+    s.expiry=newExp.toISOString();
+    DB.payments.push({id:Date.now(),studentId:s.id,studentName:s.name,value:120,type:'Renovação',method:'pix',status:'pago',date:new Date().toISOString()});
+    DB.save();renderStudents();Swal.fire('Renovado','Plano renovado por +30 dias.','success');
+}
+
+function toggleBlock(id) {
+    const s=DB.students.find(x=>x.id===id);
+    if(!s)return;
+    s.status=s.status==='bloqueado'?'ativo':'bloqueado';
+    DB.save();renderStudents();
+    Swal.fire(s.status==='bloqueado'?'Bloqueado':'Desbloqueado',`${s.name} ${s.status==='bloqueado'?'bloqueado':'desbloqueado'}.`,'info');
+}
+
+function softDelete(id) {
+    const s=DB.students.find(x=>x.id===id);
+    if(!s)return;
+    Swal.fire({title:'Cancelar Aluno?',text:`${s.name} será marcado como cancelado (histórico preservado).`,icon:'warning',showCancelButton:true,confirmButtonText:'Sim',confirmButtonColor:'#ef4444'}).then(r=>{
+        if(r.isConfirmed){s.status='cancelado';s.deletedAt=new Date().toISOString();DB.save();renderStudents();Swal.fire('Cancelado','','success');}
     });
 }
 
-function filterStudents(val) { renderStudents(val); }
-
-function renewStudent(id) {
-    const s = DB.students.find(x => x.id === id);
-    if(s) {
-        const newExpiry = new Date(s.expiry < new Date() ? new Date() : s.expiry);
-        newExpiry.setDate(newExpiry.getDate() + 30);
-        s.expiry = newExpiry.toISOString();
-        
-        DB.payments.push({
-            id: Date.now(),
-            studentId: s.id,
-            studentName: s.name,
-            value: 120,
-            date: new Date().toISOString(),
-            type: 'Renovação'
-        });
-        
-        DB.save();
-        renderStudents();
-        Swal.fire('Renovado', 'Plano renovado por +30 dias', 'success');
+function exportStudents(format) {
+    if(!DB.students.filter(s=>!s.deletedAt).length){Swal.fire('Nenhum dado','','info');return;}
+    const data=DB.students.filter(s=>!s.deletedAt).map(s=>[s.name,s.cpf,{30:'Mensal',90:'Trim.',180:'Sem.',365:'Anual'}[s.plan],formatDate(s.expiry),getStudentStatus(s)]);
+    const headers=['Nome','CPF','Plano','Vencimento','Status'];
+    
+    if(format==='csv'){
+        const csv=[headers,...data].map(r=>r.join(',')).join('\n');
+        downloadBlob('\ufeff'+csv,'text/csv','alunos.csv');
+    }else{
+        let html='<table><tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr>';
+        data.forEach(r=>{html+='<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>';});
+        html+='</table>';
+        downloadBlob(html,'application/vnd.ms-excel','alunos.xls');
     }
+    Swal.fire('Exportado','','success');
 }
 
-function deleteStudent(id) {
+// ==================== FINANCEIRO ====================
+function renderFinance() {
+    const list=document.getElementById('financeList');
+    if(!list)return;
+    
+    const now=new Date();
+    let tx=DB.transactions;
+    if(currentFilter.finance==='month')tx=tx.filter(t=>{const d=new Date(t.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+    if(currentFilter.finance==='year')tx=tx.filter(t=>{const d=new Date(t.date);return d.getFullYear()===now.getFullYear();});
+    
+    const income=tx.filter(t=>t.type==='income').reduce((a,t)=>a+t.value,0);
+    const expenses=tx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.value,0);
+    
+    document.getElementById('finIncome').textContent=formatCurrency(income);
+    document.getElementById('finExpenses').textContent=formatCurrency(expenses);
+    document.getElementById('finProfit').textContent=formatCurrency(income-expenses);
+    
+    list.innerHTML=tx.slice().reverse().map(t=>`
+        <div style="display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--border)">
+            <div>
+                <div style="font-weight:600">${t.description}</div>
+                <div style="font-size:0.85rem;color:var(--text-muted)">${formatDate(t.date)} • ${t.category}</div>
+            </div>
+            <div style="font-weight:700;color:${t.type==='income'?CONFIG.primaryColor:CONFIG.danger}">${t.type==='income'?'+':'-'}${formatCurrency(t.value)}</div>
+        </div>`).join('')||'<div style="text-align:center;padding:40px;color:var(--text-muted)">Nenhum lançamento</div>';
+}
+
+function filterFinancePeriod(period,el){currentFilter.finance=period;document.querySelectorAll('#finance .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderFinance();}
+
+function showAddTransaction(type) {
     Swal.fire({
-        title: 'Tem certeza?',
-        text: "Isso apagará todos os dados do aluno.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            DB.students = DB.students.filter(s => s.id !== id);
-            DB.save();
-            renderStudents();
-            Swal.fire('Excluído', '', 'success');
+        title:type==='income'?'Nova Entrada':'Nova Saída',
+        html:`<div class="form-group"><label>Descrição</label><input type="text" id="txDesc" class="form-control"></div>
+              <div class="form-group"><label>Categoria</label><select id="txCat" class="form-control">${type==='income'?'<option>Mensalidade</option><option>Avaliação</option><option>Produto</option>':'<option>Aluguel</option><option>Salários</option><option>Manutenção</option><option>Contas</option>'}</select></div>
+              <div class="form-group"><label>Valor (R$)</label><input type="number" id="txVal" class="form-control" step="0.01" min="0"></div>`,
+        confirmButtonText:'Salvar',showCancelButton:true,preConfirm:()=>{
+            const desc=document.getElementById('txDesc').value,c=document.getElementById('txCat').value,v=parseFloat(document.getElementById('txVal').value);
+            if(!desc||!v)return Swal.showValidationMessage('Preencha descrição e valor');
+            return{desc,c,v};
+        }
+    }).then(r=>{
+        if(r.isConfirmed){
+            DB.transactions.push({id:Date.now(),type,value:r.value.v,category:r.value.c,description:r.value.desc,date:new Date().toISOString()});
+            if(type==='expense')DB.expenses.push({id:Date.now(),category:r.value.c,description:r.value.desc,value:r.value.v,date:new Date().toISOString()});
+            DB.save();renderFinance();Swal.fire('Salvo','','success');
         }
     });
 }
 
-// ==================== FINANCE MODULE ====================
-function renderFinance() {
-    const list = document.getElementById('financeList');
-    const totalEl = document.getElementById('finTotal');
-    
-    const total = DB.payments.reduce((acc, curr) => acc + curr.value, 0);
-    totalEl.innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-
-    list.innerHTML = DB.payments.slice().reverse().map(p => `
-        <div style="display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border);">
-            <div>
-                <div style="font-weight: 600;">${p.studentName}</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">${new Date(p.date).toLocaleDateString('pt-BR')} • ${p.type}</div>
-            </div>
-            <div style="font-weight: 700; color: var(--primary);">+ R$ ${p.value.toFixed(2)}</div>
-        </div>
-    `).join('');
+function exportFinance(format) {
+    // Implementação similar a exportStudents
+    Swal.fire('Em desenvolvimento','Funcionalidade disponível na próxima atualização.','info');
 }
 
-// ==================== WORKOUT MODULE ====================
+// ==================== TREINOS ====================
 function renderWorkoutSelects() {
-    const select = document.getElementById('workoutStudent');
-    select.innerHTML = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    const sel=document.getElementById('workoutStudent');
+    if(!sel)return;
+    sel.innerHTML=DB.students.filter(s=>!s.deletedAt&&getStudentStatus(s)==='ativo').map(s=>`<option value="${s.id}">${s.name}</option>`).join('')||'<option>Nenhum aluno ativo</option>';
 }
 
 function saveWorkout() {
-    const studentId = document.getElementById('workoutStudent').value;
-    const type = document.getElementById('workoutType').value;
-    const desc = document.getElementById('workoutDesc').value;
-
-    if(!desc) return Swal.fire('Atenção', 'Descreva os exercícios', 'warning');
-
-    const student = DB.students.find(s => s.id == studentId);
-
-    DB.workouts.push({
-        id: Date.now(),
-        studentId,
-        studentName: student.name,
-        type,
-        desc,
-        date: new Date().toISOString()
-    });
+    const sid=document.getElementById('workoutStudent').value,type=document.getElementById('workoutType').value,desc=document.getElementById('workoutDesc').value.trim(),teacher=document.getElementById('workoutTeacher').value||currentUser?.name;
+    if(!sid||!desc){Swal.fire('Preencha aluno e exercícios','','warning');return;}
     
-    DB.save();
-    document.getElementById('workoutDesc').value = '';
-    Swal.fire('Salvo', 'Ficha de treino atribuída', 'success');
+    const student=DB.students.find(s=>s.id==sid);
+    // Versionamento: verificar versão anterior
+    const lastVer=DB.workouts.filter(w=>w.studentId==sid&&w.type===type).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+    const version=lastVer?(lastVer.version||1)+1:1;
+    
+    DB.workouts.push({id:Date.now(),studentId:+sid,studentName:student.name,type,desc,teacher,version,date:new Date().toISOString(),active:true});
+    // Desativar versões anteriores do mesmo tipo
+    DB.workouts.forEach(w=>{if(w.studentId==sid&&w.type===type&&w.id!==Date.now())w.active=false;});
+    
+    DB.save();document.getElementById('workoutDesc').value='';
+    Swal.fire('Salvo',`Treino ${type} v${version} prescrito por ${teacher}`,'success');
+    renderWorkoutsList();
 }
 
-// ==================== UTILS ====================
-function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DB));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "gym_backup_" + new Date().toISOString().slice(0,10) + ".json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+function renderWorkoutsList() {
+    const container=document.getElementById('workoutsList');
+    if(!container)return;
+    container.innerHTML=DB.workouts.slice().reverse().map(w=>`
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;background:var(--bg-card)">
+            <div style="display:flex;justify-content:space-between;align-items:start">
+                <div><strong>${w.studentName}</strong> <span class="version-badge">v${w.version}</span><div style="font-size:0.9rem;color:var(--text-muted)">Treino ${w.type} • ${formatDate(w.date)}</div></div>
+                <span class="badge ${w.active?'badge-success':'badge-secondary'}">${w.active?'Ativo':'Histórico'}</span>
+            </div>
+            <div style="margin:12px 0;font-size:0.95rem;white-space:pre-wrap">${w.desc}</div>
+            <div style="font-size:0.85rem;color:var(--text-muted)">👨‍🏫 ${w.teacher}</div>
+        </div>`).join('')||'<div style="text-align:center;padding:40px;color:var(--text-muted)">Nenhum treino registrado</div>';
 }
 
-function exportPDF(section) {
-    Swal.fire('Em desenvolvimento', 'A funcionalidade de PDF estará disponível na v2.6', 'info');
+// ==================== CHECK-IN ====================
+function renderCheckinSelects() {
+    const sel=document.getElementById('checkinStudent');
+    if(!sel)return;
+    sel.innerHTML=DB.students.filter(s=>studentCanCheckin(s)).map(s=>`<option value="${s.id}">${s.name} ✅</option>`).join('')||'<option>Nenhum aluno apto</option>';
+}
+
+function registerCheckin() {
+    const sid=document.getElementById('checkinStudent').value;
+    if(!sid){Swal.fire('Selecione um aluno','','error');return;}
+    
+    const student=DB.students.find(s=>s.id==sid);
+    if(!studentCanCheckin(student)){Swal.fire('Acesso Negado',`${student.name} não pode fazer check-in (status: ${getStudentStatus(student)}).`,'error');return;}
+    
+    // Verificar limite diário
+    const hoje=new Date().toDateString();
+    const count=DB.checkins.filter(c=>c.studentId==sid&&new Date(c.date).toDateString()===hoje).length;
+    if(count>=CONFIG.maxCheckinsPerDay){Swal.fire('Limite Atingido',`${student.name} já realizou ${count} check-in(s) hoje.`,'info');return;}
+    
+    DB.checkins.push({id:Date.now(),studentId:+sid,studentName:student.name,date:new Date().toISOString(),ip:'',geo:''}); // IP/Geo opcional
+    DB.save();renderCheckinsToday();renderCheckinsList();
+    Swal.fire('Check-in Registrado',`Entrada de ${student.name} às ${new Date().toLocaleTimeString('pt-BR')}`,'success');
+    
+    // Notificação push (se permitido)
+    if(Notification.permission==='granted')new Notification('✅ Check-in',{body:student.name,icon:'https://via.placeholder.com/128/10b981/fff?text=OK'});
+}
+
+function renderCheckinsToday() {
+    const hoje=new Date().toDateString();
+    const count=DB.checkins.filter(c=>new Date(c.date).toDateString()===hoje).length;
+    document.getElementById('checkinsCount').textContent=count;
+}
+
+function renderCheckinsList() {
+    const container=document.getElementById('checkinsList');
+    if(!container)return;
+    container.innerHTML=DB.checkins.slice().reverse().slice(0,10).map(c=>`
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+            <div><strong>${c.studentName}</strong><div style="font-size:0.85rem;color:var(--text-muted)">${new Date(c.date).toLocaleString('pt-BR')}</div></div>
+            <span class="badge badge-success">✅</span>
+        </div>`).join('')||'<div style="text-align:center;padding:20px;color:var(--text-muted)">Nenhum check-in recente</div>';
+}
+
+// ==================== RELATÓRIOS ====================
+function showReport(type,el) {
+    if(el){document.querySelectorAll('#reports .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+    
+    const ctx=document.getElementById('reportChart')?.getContext('2d');
+    if(!ctx)return;
+    if(charts.report)charts.report.destroy();
+    
+    let labels=[],data=[],title='';
+    
+    if(type==='revenue'){
+        title='Receita por Mês';
+        const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        const now=new Date();
+        labels=months.slice(now.getMonth()-5,now.getMonth()+1);
+        data=labels.map((_,i)=>{
+            const m=new Date(now.getFullYear(),now.getMonth()-5+i,1);
+            return DB.transactions.filter(t=>{const d=new Date(t.date);return t.type==='income'&&d.getMonth()===m.getMonth()&&d.getFullYear()===m.getFullYear();}).reduce((a,t)=>a+t.value,0);
+        });
+    }
+    // ... outros tipos
+    
+    charts.report=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Valor',data,borderColor:CONFIG.primaryColor,backgroundColor:CONFIG.primaryColor}]},options:{responsive:true,scales:{x:{ticks:{color:document.body.classList.contains('dark-mode')?'#94a3b8':'#64748b'}},y:{ticks:{color:document.body.classList.contains('dark-mode')?'#94a3b8':'#64748b'},beginAtZero:true}}}});
+    
+    // Atualizar cards
+    document.getElementById('reportTotalRevenue').textContent=formatCurrency(DB.transactions.filter(t=>t.type==='income').reduce((a,t)=>a+t.value,0));
+    document.getElementById('reportActiveStudents').textContent=DB.students.filter(s=>getStudentStatus(s)==='ativo').length;
+}
+
+function exportReport(format) { Swal.fire('Exportando...','Gerando relatório...','info'); }
+
+// ==================== UTILITÁRIOS GERAIS ====================
+function downloadBlob(content,type,filename) {
+    const blob=new Blob([content],{type});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportBackup() {
+    const data={students:DB.students,payments:DB.payments,expenses:DB.expenses,workouts:DB.workouts,checkins:DB.checkins,transactions:DB.transactions,config:CONFIG,exportedAt:new Date().toISOString(),version:CONFIG.version};
+    downloadBlob(JSON.stringify(data,null,2),'application/json',`gym_backup_${new Date().toISOString().slice(0,10)}.json`);
+    Swal.fire('Backup Realizado','Arquivo baixado com sucesso.','success');
 }
 
 function showNotifications() {
-    const expired = DB.students.filter(s => new Date(s.expiry) < new Date()).length;
-    if(expired > 0) {
-        Swal.fire('Atenção', `${expired} aluno(s) com plano vencido!`, 'warning');
-    } else {
-        Swal.fire('Tudo em dia', 'Nenhum alerta pendente.', 'success');
-    }
+    const alerts=[];
+    // Planos vencendo em 3 dias
+    const vencendo=DB.students.filter(s=>{const v=parseDateSafe(s.expiry),hoje=new Date(),diff=Math.ceil((v-hoje)/86400000);return getStudentStatus(s)==='ativo'&&diff<=CONFIG.graceDays&&diff>0;});
+    vencendo.forEach(s=>alerts.push({type:'warning',msg:`${s.name} vence em ${Math.ceil((parseDateSafe(s.expiry)-new Date())/86400000)} dias`}));
+    
+    // Inadimplentes
+    const inad=DB.students.filter(s=>getStudentStatus(s)==='inadimplente');
+    inad.forEach(s=>alerts.push({type:'danger',msg:`${s.name} está inadimplente desde ${formatDate(s.expiry)}`}));
+    
+    // Inativos (>7 dias sem check-in)
+    const hoje=new Date().toDateString();
+    const inativos=DB.students.filter(s=>{const last=DB.checkins.filter(c=>c.studentId===s.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];return last&&new Date(last.date).toDateString()!==hoje&&Date.now()-new Date(last.date)>7*86400000;});
+    inativos.forEach(s=>alerts.push({type:'warning',msg:`${s.name} não faz check-in há mais de 7 dias`}));
+    
+    if(!alerts.length){Swal.fire('Tudo em dia','Nenhum alerta pendente.','success');return;}
+    
+    Swal.fire({title:`🔔 ${alerts.length} Alerta(s)`,html:alerts.map(a=>`<div class="notification-item ${a.type}">${a.msg}</div>`).join(''),confirmButtonText:'Fechar'});
 }
 
 function resetSystem() {
-    Swal.fire({
-        title: 'RESETAR FÁBRICA?',
-        text: "Todos os dados serão perdidos permanentemente!",
-        icon: 'error',
-        showCancelButton: true,
-        confirmButtonText: 'SIM, APAGAR TUDO'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            localStorage.clear();
-            location.reload();
-        }
-    });
+    Swal.fire({title:'⚠️ RESET COMPLETO?',html:'<strong>TODOS os dados serão PERDIDOS!</strong><br><br>Esta ação é IRREVERSÍVEL.',icon:'error',showCancelButton:true,confirmButtonText:'SIM, APAGAR TUDO',confirmButtonColor:'#ef4444'}).then(r=>{if(r.isConfirmed){localStorage.clear();location.reload();}});
 }
 
-// Initial Load Simulation
-setTimeout(() => {
-    document.getElementById('loadingOverlay').style.opacity = '0';
-    setTimeout(() => {
-        document.getElementById('loadingOverlay').style.display = 'none';
-        // Show login by default, handled by CSS display:none on appContainer
-    }, 500);
-}, 1500);
+// ==================== ATUALIZAÇÕES ====================
+async function verificarAtualizacoes() {
+    try{
+        // Simulação - em produção: fetch(CONFIG.updateUrl)
+        const badge=document.getElementById('updateBadge');
+        if(badge&&!badge.classList.contains('show')){badge.classList.add('show');}
+    }catch(e){console.log('Update check offline');}
+}
 
+function handleUpdateClick() {
+    Swal.fire({title:'🚀 Nova Versão',html:'<strong>v3.1.0</strong><ul style="text-align:left;margin:15px 0"><li>✅ App mobile nativo</li><li>✅ Integração WhatsApp</li><li>✅ Backup na nuvem</li></ul>',confirmButtonText:'📧 Solicitar',showCancelButton:true}).then(r=>{if(r.isConfirmed)window.location.href='mailto:suporte@gymproelite.com.br?subject=Atualização GYM PRO ELITE';document.getElementById('updateBadge').classList.remove('show');});
+}
+
+// ==================== INICIALIZAÇÃO FINAL ====================
+document.addEventListener('DOMContentLoaded',()=>{
+    // Simular loading
+    setTimeout(()=>{
+        const loading=document.getElementById('loadingOverlay');
+        if(loading){loading.style.opacity='0';setTimeout(()=>loading.remove(),500);}
+    },1500);
+    
+    // Atalhos de teclado
+    document.addEventListener('keydown',e=>{
+        if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+        if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();navTo('students');}
+        if(e.key==='Escape')navTo('dashboard');
+    });
+    
+    // PWA
+    if('serviceWorker'in navigator)console.log('📱 PWA ready');
+});
 </script>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="data:application/manifest+json,{
+    &quot;name&quot;:&quot;GYM PRO ELITE&quot;,
+    &quot;short_name&quot;:&quot;GymPro&quot;,
+    &quot;start_url&quot;:&quot;.&quot;,
+    &quot;display&quot;:&quot;standalone&quot;,
+    &quot;background_color&quot;:&quot;#f1f5f9&quot;,
+    &quot;theme_color&quot;:&quot;#10b981&quot;,
+    &quot;description&quot;:&quot;Sistema Profissional de Gestão de Academias&quot;,
+    &quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='20' fill='%2310b981'/&gt;&lt;text x='50' y='65' font-size='50' text-anchor='middle' fill='white'&gt;💪&lt;/text&gt;&lt;/svg&gt;&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;,&quot;purpose&quot;:&quot;any maskable&quot;}]
+}">
+
 </body>
 </html>
