@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura & Demo | GYM PRO ELITE</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #10b981; --dark: #0f172a; --bg: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--dark); }
+        
+        header { background: white; padding: 20px 40px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 1.5rem; }
+        
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 40px; max-width: 1400px; margin: 0 auto; }
+        
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card h2 { margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        /* Interactive Mockup */
+        .mockup-container { display: flex; gap: 20px; height: 500px; }
+        .mockup-nav { width: 200px; background: #1e293b; border-radius: 12px 0 0 12px; padding: 20px; color: white; }
+        .mockup-nav button { background: none; border: none; color: #94a3b8; width: 100%; text-align: left; padding: 12px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; }
+        .mockup-nav button:hover, .mockup-nav button.active { background: var(--primary); color: white; }
+        
+        .mockup-screen { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0 12px 12px 0; padding: 20px; position: relative; overflow: hidden; }
+        
+        .screen-content { display: none; animation: fadeIn 0.3s; }
+        .screen-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* UML Specifics */
+        .mermaid { display: flex; justify-content: center; }
+        
+        .data-flow { margin-top: 20px; font-size: 0.9rem; color: #64748b; }
+        .data-flow strong { color: var(--dark); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><i class="fas fa-sitemap"></i> Arquitetura do Sistema</h1>
+    <div>
+        <a href="index.html" style="text-decoration: none; color: var(--primary); font-weight: 600; margin-right: 20px;">Ir para Sistema Real</a>
+        <a target="_blank"  href="documentacao.html" style="text-decoration: none; color: #64748b;">Ver Docs</a>
+    </div>
+</header>
+
+<div class="container">
+    
+    <!-- Column 1: UML Diagrams -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="card">
+            <h2><i class="fas fa-project-diagram"></i> Diagrama de Entidades (ERD)</h2>
+            <div class="mermaid">
+                erDiagram
+                    ALUNO ||--o{ PAGAMENTO : "gera"
+                    ALUNO ||--o{ CHECKIN : "realiza"
+                    ALUNO ||--o{ TREINO : "possui"
+                    ALUNO ||--o{ METRICA : "possui"
+                    ALUNO {
+                        int id PK
+                        string nome
+                        string cpf UK
+                        date vencimento
+                        string status
+                    }
+                    PAGAMENTO {
+                        int id PK
+                        float valor
+                        string tipo
+                        date data
+                    }
+                    TREINO {
+                        int id PK
+                        string tipo "A/B/C"
+                        string descricao
+                        int versao
+                    }
+            </div>
+            <div class="data-flow">
+                <p><strong>Fluxo de Dados:</strong> O objeto <code>ALUNO</code> é a chave primária. Todas as outras tabelas referenciam o ID do aluno para manter a integridade.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-cogs"></i> Fluxo de Check-in</h2>
+            <div class="mermaid">
+                sequenceDiagram
+                    participant R as Recepcionista
+                    participant S as Sistema
+                    participant D as Database
+                    R->>S: Seleciona Aluno
+                    S->>D: Verifica Status & Data
+                    alt Plano Ativo AND Não fez hoje
+                        D-->>S: OK
+                        S-->>R: Sucesso (Green)
+                        S->>D: Registra Check-in
+                    else Plano Vencido OR Já fez hoje
+                        D-->>S: Bloqueado
+                        S-->>R: Erro (Red)
+                    end
+            </div>
+        </div>
+    </div>
+
+    <!-- Column 2: Interactive Interface Demo -->
+    <div class="card">
+        <h2><i class="fas fa-mouse-pointer"></i> Navegação Interativa (Mockup)</h2>
+        <p style="margin-bottom: 20px; color: #64748b;">Clique nos itens do menu lateral para ver como a interface responde logicamente.</p>
+        
+        <div class="mockup-container">
+            <div class="mockup-nav">
+                <button class="active" onclick="showScreen('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</button>
+                <button onclick="showScreen('alunos', this)"><i class="fas fa-users"></i> Alunos</button>
+                <button onclick="showScreen('financeiro', this)"><i class="fas fa-chart-line"></i> Financeiro</button>
+                <button onclick="showScreen('checkin', this)"><i class="fas fa-fingerprint"></i> Check-in</button>
+            </div>
+            
+            <div class="mockup-screen">
+                <!-- Dashboard Screen -->
+                <div id="dashboard" class="screen-content active">
+                    <h3 style="color: #1e293b;">Visão Geral</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                        <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px solid #10b981;">
+                            <div style="font-size: 0.8rem; color: #059669;">Alunos Ativos</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #059669;">142</div>
+                        </div>
+                        <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border: 1px solid #ef4444;">
+                            <div style="font-size: 0.8rem; color: #dc2626;">Inadimplentes</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #dc2626;">18</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: white; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <strong>📊 Gráfico de Frequência</strong>
+                        <div style="height: 100px; background: #f1f5f9; margin-top: 10px; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 5px;">
+                            <div style="width: 30px; height: 40%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                            <div style="width: 30px; height: 70%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                            <div style="width: 30px; height: 50%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                            <div style="width: 30px; height: 90%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                            <div style="width: 30px; height: 60%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                        </div>
+                        <div style="text-align: center; font-size: 0.7rem; margin-top: 5px; color: #64748b;">Seg Ter Qua Qui Sex</div>
+                    </div>
+                </div>
+
+                <!-- Alunos Screen -->
+                <div id="alunos" class="screen-content">
+                    <h3 style="color: #1e293b;">Lista de Alunos</h3>
+                    <div style="margin: 15px 0; display: flex; gap: 10px;">
+                        <input type="text" placeholder="Buscar..." style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <button style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px;">Novo</button>
+                    </div>
+                    <table style="width: 100%; font-size: 0.9rem;">
+                        <thead style="background: #f1f5f9; text-align: left;">
+                            <tr><th style="padding: 8px;">Nome</th><th style="padding: 8px;">Status</th><th style="padding: 8px;">Vencimento</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 8px;">João Silva</td>
+                                <td style="padding: 8px;"><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">Ativo</span></td>
+                                <td style="padding: 8px;">15/11/2026</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 8px;">Maria Souza</td>
+                                <td style="padding: 8px;"><span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">Inadimplente</span></td>
+                                <td style="padding: 8px;">01/10/2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Financeiro Screen -->
+                <div id="financeiro" class="screen-content">
+                    <h3 style="color: #1e293b;">Resumo Financeiro</h3>
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div>
+                            <div style="color: #64748b; font-size: 0.9rem;">Entradas (Mês)</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #10b981;">R$ 12.450</div>
+                        </div>
+                        <div>
+                            <div style="color: #64748b; font-size: 0.9rem;">Saídas (Mês)</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #ef4444;">R$ 4.200</div>
+                        </div>
+                        <div>
+                            <div style="color: #64748b; font-size: 0.9rem;">Lucro Líquido</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #3b82f6;">R$ 8.250</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check-in Screen -->
+                <div id="checkin" class="screen-content">
+                    <h3 style="color: #1e293b;">Registrar Acesso</h3>
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-fingerprint" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+                        <select style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 20px;">
+                            <option>Selecione o Aluno...</option>
+                            <option>João Silva (Ativo)</option>
+                            <option>Maria Souza (Bloqueado)</option>
+                        </select>
+                        <button style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem;">
+                            VALIDAR ACESSO
+                        </button>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: #64748b;">
+                            <i class="fas fa-info-circle"></i> O sistema bloqueará automaticamente alunos inadimplentes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">
+            <p><strong>Nota Técnica:</strong> Esta demonstração usa HTML/CSS estático para simular a UI. No sistema real (`index.html`), todos os dados são dinâmicos e persistidos via JavaScript.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+
+    function showScreen(screenId, btn) {
+        // Remove active class from all buttons and screens
+        document.querySelectorAll('.mockup-nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked
+        btn.classList.add('active');
+        document.getElementById(screenId).classList.add('active');
+    }
+</script>
+
+</body>
+</html>

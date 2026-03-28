@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação | GYM PRO ELITE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #10b981; --dark: #0f172a; --light: #f8fafc; --text: #334155; }
+        body { font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; color: var(--text); background: #f1f5f9; }
+        
+        /* Sidebar */
+        aside { width: 280px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; position: fixed; height: 100%; }
+        .logo-area { padding: 24px; border-bottom: 1px solid #e2e8f0; }
+        .logo-area h2 { color: var(--primary); margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        nav ul { list-style: none; padding: 20px; }
+        nav li { margin-bottom: 8px; }
+        nav a { text-decoration: none; color: var(--text); display: block; padding: 10px; border-radius: 8px; transition: 0.2s; font-weight: 500; }
+        nav a:hover, nav a.active { background: var(--primary); color: white; }
+        
+        /* Content */
+        main { margin-left: 280px; flex: 1; padding: 40px; overflow-y: auto; max-width: 1000px; }
+        section { margin-bottom: 60px; scroll-margin-top: 20px; }
+        h1 { font-size: 2.5rem; color: var(--dark); margin-bottom: 10px; }
+        h2 { font-size: 1.8rem; color: var(--dark); border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 40px; }
+        h3 { font-size: 1.3rem; color: var(--dark); margin-top: 25px; }
+        p { line-height: 1.7; margin-bottom: 15px; }
+        
+        /* Components */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin: 20px 0; }
+        .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .alert { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .alert i { color: #f59e0b; margin-right: 10px; }
+        
+        code { background: #1e293b; color: #10b981; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        pre { background: #1e293b; color: #f1f5f9; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; position: relative; }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="logo-area">
+        <h2><i class="fas fa-dumbbell"></i> GYM PRO DOCS</h2>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#intro" class="active">Introdução</a></li>
+            <li><a href="#instalacao">Instalação</a></li>
+            <li><a href="#alunos">Gestão de Alunos</a></li>
+            <li><a href="#financeiro">Financeiro</a></li>
+            <li><a href="#treinos">Treinos</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#termos">Termos de Licença</a></li>
+        </ul>
+    </nav>
+</aside>
+
+<main>
+    <section id="intro">
+        <h1>Manual do Usuário</h1>
+        <p>Bem-vindo ao <strong>GYM PRO ELITE v3.0</strong>. Este documento cobre todas as funcionalidades do sistema para garantir o melhor uso pela sua equipe.</p>
+        <div class="card">
+            <h3>🎯 O que você vai encontrar:</h3>
+            <ul>
+                <li>Guia passo a passo de instalação.</li>
+                <li>Tutoriais de módulos (Alunos, Financeiro, Treinos).</li>
+                <li>Perguntas frequentes e solução de problemas.</li>
+                <li>Termos de licença e garantia.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="instalacao">
+        <h2>🚀 Instalação</h2>
+        <p>O sistema foi desenvolvido para ser <strong>portátil e sem dependências</strong>.</p>
+        
+        <h3>Passo 1: Download</h3>
+        <p>Baixe o arquivo <code>index.html</code> fornecido.</p>
+        
+        <h3>Passo 2: Execução</h3>
+        <p>Basta dar dois cliques no arquivo. Ele abrirá no seu navegador padrão.</p>
+        
+        <div class="alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>Nota:</strong> Para acesso em múltiplos computadores na mesma rede, recomenda-se hospedar o arquivo em um servidor local (ex: XAMPP) ou usar serviços como GitHub Pages.
+        </div>
+
+        <h3>Credenciais Padrão</h3>
+        <table>
+            <tr><th>Usuário</th><th>Senha</th><th>Nível</th></tr>
+            <tr><td>admin</td><td>admin</td><td>Administrador</td></tr>
+        </table>
+    </section>
+
+    <section id="alunos">
+        <h2>👥 Gestão de Alunos</h2>
+        <p>O coração do sistema. Aqui você gerencia o ciclo de vida do aluno.</p>
+        
+        <h3>Cadastro</h3>
+        <p>Preencha nome, CPF (validado automaticamente) e plano. O sistema calcula a data de vencimento com base no plano escolhido.</p>
+        
+        <h3>Status do Aluno</h3>
+        <ul>
+            <li>🟢 <strong>Ativo:</strong> Plano em dia. Acesso liberado.</li>
+            <li>🔴 <strong>Inadimplente:</strong> Plano vencido. Acesso bloqueado no check-in.</li>
+            <li>⚫ <strong>Bloqueado:</strong> Bloqueio manual (ex: comportamento).</li>
+            <li>⚪ <strong>Cancelado:</strong> Aluno desligado (Soft Delete).</li>
+        </ul>
+    </section>
+
+    <section id="financeiro">
+        <h2>💰 Controle Financeiro</h2>
+        <p>Controle entradas (mensalidades) e saídas (aluguel, contas) para saber o lucro real.</p>
+        <div class="card">
+            <p><strong>Dica Pro:</strong> Use a função de "Lançamentos" para registrar despesas fixas mensais. O sistema calculará automaticamente seu Lucro Líquido.</p>
+        </div>
+    </section>
+
+    <section id="treinos">
+        <h2>🏋️ Prescrição de Treinos</h2>
+        <p>Crie fichas de treino (A, B, C, D) com versionamento.</p>
+        <p>Se um aluno mudar de treino, o sistema salva a versão anterior como "Histórico" e cria a "v2", permitindo acompanhar a evolução sem perder dados.</p>
+    </section>
+
+    <section id="faq">
+        <h2>❓ FAQ (Perguntas Frequentes)</h2>
+        
+        <h3>O sistema funciona sem internet?</h3>
+        <p>Sim! Após carregar a primeira vez, ele funciona 100% offline.</p>
+        
+        <h3>Meus dados estão seguros?</h3>
+        <p>Sim, ficam salvos no seu navegador (LocalStorage). Recomendamos fazer backup semanal (botão de download no topo).</p>
+        
+        <h3>Posso usar em mais de um computador?</h3>
+        <p>Sim, mas os dados são locais. Para sincronizar, você precisaria de uma versão com banco de dados na nuvem ou fazer restore do backup manualmente.</p>
+    </section>
+
+    <section id="termos">
+        <h2>📄 Termos de Licença</h2>
+        <p><strong>Licença Comercial Single-User</strong></p>
+        <ul>
+            <li>✅ Uso vitalício em 1 academia.</li>
+            <li>✅ Atualizações gratuitas por 12 meses.</li>
+            <li>❌ Proibida revenda do código fonte.</li>
+            <li>❌ Proibido uso como SaaS (venda de acesso) sem licença Enterprise.</li>
+        </ul>
+        <p style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">© 2026 GYM PRO ELITE. Todos os direitos reservados.</p>
+    </section>
+</main>
+
+<script>
+    // Smooth scroll active state
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('nav a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
